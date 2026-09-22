@@ -11,26 +11,34 @@ Official description:
     CS240LX: two labs, twice a week, along with a set of research papers
     for context.
 
+Grading:
+  1. Midterm project.
+  2. Final project.
+  3. Labs.
+  4. No robot usage for the main labs.  Ok for projects or
+     (possibly) some huge extension after finishing main lab in with
+     your own bare hands.
+
 Context:
  - Final class in the 140e/240lx pipeline (as of rn :).
  - We only offer it every few years when there is an unusual 
    group.  Lots of great alumni!
  - This is the 4rd offering.
  - Joseph graduated, so it's Max and me now.
+ - First couple weeks will likely have more chaos b/c of reasons discussed
+   in class.  
 
 Structure:
  - 140e and 240lx have to fulfill class requirements, so content somewhat
    constrained.  
  - 340lx we build whatever seems interesting --- only rule is we build and
-   you have a working example of a cool trick or deep method every lab.
-
+   you have a working example of a cool trick or deep method every lab.<br>
    In general: we go broader on fun stuff (devices), go deeper on
    interesting stuff than the simple examples in previous labs.  
  - One fantastic difference: Around half of the labs are usually
    student-written.  You have already suffered through over 30 labs
    as consumers, so now is your chance to buld the labs you would have 
-   wanted.  
-
+   wanted.  <br>
    This is my favorite part of the class.  I always learn alot.  The new
    labs give tricks useful for 140e/240lx.  And, as we saw, (eg Stuart's
    elf lab) these labs can >>> better than our staff ones :)
