@@ -1,5 +1,4 @@
-# Makefile to build or clean all labs.
-SUBDIRS := 1-fast-dev-int
+SUBDIRS= code
 
 .PHONY: all check clean
 all check clean: $(SUBDIRS)
@@ -12,7 +11,7 @@ clean: TARGET=clean
 
 # recursive call to make
 $(SUBDIRS): force
-	$(MAKE) -s -C $@ $(TARGET) RUN=0
+	$(MAKE) -s -C $@ $(TARGET)
 
 clean:
 	rm -f *~ *.bak
