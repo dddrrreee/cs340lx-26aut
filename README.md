@@ -1,4 +1,4 @@
-### CS340lx: (even more) advanced systems labs
+### CS340lx aut'26: (even more) advanced systems labs
 
 <p align="center">
   <img src="labs/lab-memes/plan.png" width="350" />
@@ -15,8 +15,8 @@ Context:
  - Final class in the 140e/240lx pipeline (as of rn :).
  - We only offer it every few years when there is an unusual 
    group.  Lots of great alumni!
- - This is the 3rd offering.
- - Joe graduated, but we have Joseph as a variant!
+ - This is the 4rd offering.
+ - Joseph graduated, so it's Max and me now.
 
 Structure:
  - 140e and 240lx have to fulfill class requirements, so content somewhat
@@ -68,20 +68,15 @@ What's the big picture goal:
   <img src="labs/lab-memes/battle-bot.jpg" width="350" />
 </p>
 
-Definite lab:
- - Parthiv's PCB lab next thursday 10/2.
-
 Some possible good labs from 240lx final projects
 
  - Stuart's elf debug: use to make a real profiler.
- - Quake (sai and james): will do screen and keyboard labs
- - ox64 (Aditya et al): cheap, real riscv
+ - Quake (Sai and James): will do screen and keyboard labs
+ - pico (Gabe?) 
  - Pi zero 2 (Benji): 4 armv7 processor, faster, still bcm2835.
- - handwriting rec (Chia-Hsiang, Irene, Kaylee, Weixin)
- - fuse?
+ - Fuse?
 
 Likely devices:
-  - i2s microphone, 
   - class D amplifier + speaker
   - HDMI screen
   - Lidar
@@ -89,28 +84,25 @@ Likely devices:
   - sbcs: pico 2, pico, ox64, pi zero 2
 
 Tentative things I'd like to do (won't do all)
-  - Doing Turing complete DMA (based on Max Cura's hack) - Speed up
-     interrupts/exceptions by 50x.
-  - a solid network boot loader that works over RF, sound, light, IR.
+  - Doing more Turing complete DMA (based on Max Cura's hack) 
+  - Speed up interrupts/exceptions by 50x.
+  - A solid network boot loader that works over RF, sound, light, IR.
     It's wild to send code using sound or a blinky light.
   - A few projects putting together several devices.
     (e.g., accel controlled lights, acoustically reactive displays)
     Key: use tricks to verify the system so you're suprised if it breaks.
-  - in honor of Joe: chip8 video game emulator.
   - Make a bunch of stuff really, really fast.  Fun hack is write code
-    on your pi that beats
-    linux/macos on your fancy modern laptop --- e.g., exceptions or 
-    tiny processes so you can quickly fork 100,000 (versus crashing 
-    your laptop).
-  - finally build the runtime tools we were discussing: eraser race detector, 
+    on your pi that beats linux/macos on your fancy modern laptop ---
+    e.g., exceptions or tiny processes so you can quickly fork 100,000
+    (versus crashing your laptop).
+  - Finally build the runtime tools we were discussing: eraser race detector, 
     volatile checker.
-  - do much better versions of 140e labs so can pull them in: ideally
+  - Do much better versions of 140e labs so can pull them in: ideally
     a simple complete OS.  definitely a better fast FAT32
 
 The basic play: we've spend a couple quarters learning alot of low-level
 stuff the hard way.  Now reap the rewards using it to build the cool
 stuff.
-
 
 <p align="center">
   <img src="labs/lab-memes/adhd-tetris.jpg" width="350" />
