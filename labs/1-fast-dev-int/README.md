@@ -406,6 +406,12 @@ handler to:
     e = cycle_cnt_read();
 ```
 
+Note: 
+  - We no longer have any sanity check that we got what we expected.  In
+    this case b/c of the measurement code we "should be ok" but you need
+    to keep an eye on these short-cuts: if you are wrong, will you know?
+    (In this case, not.)
+
 Obviously we're redoing something we could have done right the first time.
 But this is not uncommon at all to:
   1. Do a modification to speed up code.
@@ -417,6 +423,12 @@ But this is not uncommon at all to:
 This change cuts about 100 cycles, a bit over a 10% improvement.
 You'll notice that the speedups are coming in smaller amounts.
 Unfortunately this is common as you get rid of the low hanging fruit.
+
+Note:
+  - You'll probably get slightly different numbers.  E.g,. I now have 918
+    not 901!  Foreshadowing: this is at least partly due to us being
+    sloppy about some basic timing hygiene: will solve in a bit, but good
+    to think about what could lead to this fluctuation.
 
 ```
 0: rising	= 1012 cycles
@@ -465,7 +477,9 @@ void int_vector(uint32_t pc) {
 
 If you measure the cost, the latter increases it from about 900 to 921.
 You should file this weirdness away for later.  (Or figure out what is
-going on :).
+going on, I should have but did not --- am very curious!)
+  - Note: you can also flip the event clear in the previous inline 
+    change, where it makes about a 30 cycle difference.  Same weird.
 
 ----------------------------------------------------------------------
 ### Step 4: use global registers to eliminate loads.
