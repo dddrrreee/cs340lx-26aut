@@ -117,5 +117,9 @@ void gpio_panic(const char *msg, ...);
 // macro hack
 #define gpio_assert(bool) do { if(!(bool)) gpio_panic(# bool); } while(0)
 
+void gpio_fiq_async_falling_edge(unsigned pin);
+void gpio_fiq_async_rising_edge(unsigned pin);
+void gpio_fiq_falling_edge(unsigned pin);
+void gpio_fiq_rising_edge(unsigned pin);
 
 #endif
