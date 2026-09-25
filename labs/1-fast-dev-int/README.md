@@ -1113,6 +1113,45 @@ Note:
    there is a bad interaction/stall between clearing the event that just
    triggered the interrupt. Odd.
 
+
+***UPDATE***
+  - I started using the PMU code from 240lx to look at things.
+  - It appears the instruction stalls increase after you flip and then
+    go back down with nops.
+  - Open question: why.
+
+So, for the initial (1) clear event and then (2) set the global 
+register we get about 241 instruction stalls:
+```
+        101 : data dependency stall
+        241: instruction stall [tlb/cache miss]
+        str event0_val, [event0]                @ store to clear event.
+        mcr 15, 0, one, cr13, cr0, 3          @ signal that we had an int
+```
+
+If we flip them it jumps to 385:
+```
+        @ 101 : data dependency stall
+        @ 385: instruction stall [tlb/cache miss]
+        mcr 15, 0, one, cr13, cr0, 3          @ signal that we had an int
+        str event0_val, [event0]                @ store to clear event.
+```
+
+If you add nops it goes down to 290:
+
+```
+        @ 101 : data dependency stall
+        @ 290: instruction stall [tlb/cache miss]
+        mcr 15, 0, one, cr13, cr0, 3          @ signal that we had an int
+        str event0_val, [event0]                @ store to clear event.
+        nop; nop; nop; nop;
+        nop; nop; nop; nop;
+```
+
+Very weird.  I would have thought we would get a small delay, not get a
+massive explosion.
+
+
 ----------------------------------------------------------------------
 ### Step 10: enable icache and branch prediction
 
