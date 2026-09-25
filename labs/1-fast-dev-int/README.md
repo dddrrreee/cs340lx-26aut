@@ -615,6 +615,9 @@ to co-processor instructions makes a huge difference!  Almost 2x!
 ave cost = 597.150024
 ```
 
+Note:
+  - The timing weirdness is still there if you flip event clear.  Interesting!
+
 ----------------------------------------------------------------------
 ### Step 5: housekeeping
 
@@ -660,11 +663,25 @@ We care about:
             s = cycle_cnt_read();
             gpio_set_on_raw(pin);
 
+
+
 You can check that all of these worked by looking for the addresses of
 each in the `.list` file and making sure that they are divisible by 32.
 
-Alignment made about 30 cycles difference for me.  It might make more
-or less for you --- this variance is why we did this change :).
+
+I also experimented with flipping event clear, before was consistently 
+faster:
+
+        __attribute__((aligned(32)))
+        void int_vector(uint32_t pc) {
+            n_int_set(n_int_get()+1);
+            let e = event0_get();
+            *e = 1 << in_pin;
+        }
+
+Alignment + flipping clear made about 30 cycles difference for me.
+It might make more or less for you --- this variance is why we did this
+change :).
 
 And as foreshadowing: at some point I accidently deleted (step 3) above,
 and wasted a lot of time chasing something that was just an artificial
@@ -992,8 +1009,8 @@ versions of my gpio interrupt routines that setup the FIQ instead.
     void gpio_fiq_async_rising_edge(unsigned pin);
     void gpio_fiq_async_falling_edge(unsigned pin);
 
-And use these during setup.  These are checked into libpi, so you can just call
-them.
+And use these during setup.  For ease of debugging mine are checked into
+libpi,but you should do these yourself so it's clear how-to.
 
 I also made a special FIQ table, and an FIQ initialization routine
 (called from `test_cost`) in assembly to initialize the FIQ registers.
@@ -1079,16 +1096,22 @@ ave cost = 267.800018
 ----------------------------------------------------------------------
 #### Interesting weird timing
 
-In the FIQ interrupt handler we:
+As before, in the FIQ interrupt handler we can:
   1. Write to the clear event GPIO address to clear the interrupt.
   2. Set the global register to indicate the interrupt occurred.
 
 We can do these in either order.  My measurements above did them (1)
-and then (2).  Weirdly, if I swap the order, then the times jump up
-to an average of 405 cycles!  I'm not sure why.  This makes me a bit
-uneasy, but so maybe someone can figure it out for extension credit.
-(My big concern is that there is a weird interaction between the global
-registers and cycle counter.)
+and then (2).  If we swap the order we still get an odd jump, but unlike
+the previous ones it's a massive one from 267 cycles to an average of
+405 cycles!  I'm not sure why it's so huge.  This magnitude makes me a
+bit uneasy, but so maybe someone can figure it out for extension credit.
+
+Note:
+ - After doing the bad flip above, if you then put a bunch of nops right
+   before returning from the interrupt handler (i.e., right before
+   the `subs` instruction) the code gets *faster* --- possibly implying
+   there is a bad interaction/stall between clearing the event that just
+   triggered the interrupt. Odd.
 
 ----------------------------------------------------------------------
 ### Step 10: enable icache and branch prediction
@@ -1097,6 +1120,17 @@ This is easy.  We turn on the icache and branch prediction and add a
 couple lines to measure both with and without.  If you're lazy you can
 enable the branch prediction cache and icache by just calling
 the libpi routine `caches_enable()`.
+
+```c
+    output("caches off\n");
+    test_cost(out_pin);
+    output("caches on\n");
+    caches_enable();
+    // if you disable variance flattens.
+    //    btc_off();
+    test_cost(out_pin);
+```
+
 
 This makes almost a 40% difference!   Great!
 ```
@@ -1126,7 +1160,32 @@ ave cost = 167.750000
 
 As usual we have a large cost for the first value. We can eliminate this
 by either doing a warmup run (try it and see!) or a doing a prefetch
-into the icache (we do this later for completeness).
+into the icache (we do this later for completeness).  Second cache run:
+
+```
+0: rising	= 167 cycles
+1: falling	= 167 cycles
+2: rising	= 158 cycles
+3: falling	= 167 cycles
+4: rising	= 167 cycles
+5: falling	= 167 cycles
+6: rising	= 158 cycles
+7: falling	= 167 cycles
+8: rising	= 167 cycles
+9: falling	= 167 cycles
+10: rising	= 158 cycles
+11: falling	= 167 cycles
+12: rising	= 158 cycles
+13: falling	= 167 cycles
+14: rising	= 167 cycles
+15: falling	= 167 cycles
+16: rising	= 167 cycles
+17: falling	= 167 cycles
+18: rising	= 167 cycles
+19: falling	= 167 cycles
+ave cost = 165.199996
+```
+
 
 ----------------------------------------------------------------------
 #### Interesting weird timing
@@ -1182,7 +1241,7 @@ My C code looks like:
         c = cycle_cnt_read();
         gpio_set_on_raw(pin);
         // 1. wait until interrupt sets global reg
-        while(!global_reg_set())   
+        while(!n_int_get())   
             ;
         // 2. measure the cycle
         e = cycle_cnt_read();
@@ -1194,7 +1253,7 @@ code addresses will be different!);
 
 ```
     ...
-             # 1. wait until interrupt sets global flag 
+             # 1. the loop that waits until interrupt sets global flag 
     8168:   ee1d3f70    mrc 15, 0, r3, cr13, cr0, {3}
     816c:   e3530000    cmp r3, #0
     8170:   0afffffc    beq 8168 <test_cost+0x108>
@@ -1209,9 +1268,25 @@ The four steps:
           Otherwise fall-through (exit the loop) to 8174.
   - 8174: Exit: read the cycle counter.
 
-The cost of the read (8168), check (816c), and branch instruction (8170)
-will always be added to the cost of the interrupt even though they just
-pure measurement overhead.
+
+The cost of the read (8168), check (816c), and branch instruction
+(8170) get added to the cost of the interrupt even though they just
+pure measurement overhead.  In fact, it's worse: if a constant amount
+was added we could just subtract it.  However, they will add variable
+delay, and thus variable error.  You can see this jitter added by by
+doing a case analysis of what exactly happens if the interrupt happens
+at each instruction.
+
+  - interrupt at 8168: we will exit the loop after doing the subsequent 
+    loop instructions 816c, 8170.
+  - interrupt at 816c: too late to change the register, we will do 
+    the loop one more time and then exit.  So: 8170, and then 8168
+    (again), 8170 (again) before exiting.
+  - interrupt at 8170: too late to change the register, we will do 
+    8168, and then 8170 before exiting.
+So the loop adds variable delay to our measurements.  If we want to
+eliminate error we have to eliminate this variance.  (And when we do a
+logic analyzer using these methods we absolutely want zero error.)
 
 If you think about it, in some sense these instructions are redundant.
 We can compute the same result --- that the interrupt handler has (1)
@@ -1225,7 +1300,7 @@ There's various ways to make this change.  However, you probably need to
 write the measurement code in assembly so that:
   1. You have complete control of the label in the measurement code
      that the interrupt handler will jump to.
-  2. The compiler does not break the code.  What we are doing is wildly
+  2. The compiler does not break the code.  What we will do is wildly
      undefined as far as the C standard is concerned.  Writing in assembly
      guarantees the C compiler won't see the code, and so can't break it.
      For example, by reordering operations it should not, or relying on
@@ -1243,7 +1318,7 @@ in the GPIO address to write to, and the constant to write:
 
 My assembly code looks sort-of like:
 ```
-    ldr r3, =resume_label  # asm syntax to load a labl
+    ldr r3, =resume_label  # asm syntax to load a label address
     r2 = read cycle counter
     @ infinite loop
     inf: 
@@ -1286,6 +1361,30 @@ With the icache on this got me down to:
 18: rising	= 113 cycles
 19: falling	= 113 cycles
 ave cost = 114.849998
+```
+
+### Hack: inline the continuation.
+
+Instead of jumping to the continuation, we can "inline" it into the FIQ handler:
+  1. Instead of storing the label into a register, save the cpsr into the register.
+  2. Replace the `movs` in the handler with a `msr cpsr, reg` so it just changes
+     mode without altering the pc.
+  3. Put the continuation there.
+
+This seems to shave a couple of cycles, but only if I sleazily don't
+prefetch-flush, so we are playing with fire.  However, there may be a
+cleaner, (faster?) legal way to do this which would make it worth it.
+
+```
+fiq:
+        str event0_val, [event0]                @ store to clear event.
+        @ movs pc, r3                           @ remove pc change
+
+        @ make sure to r3 = cpsr before this
+        msr cpsr_c, r3
+        mrc p15, 0, r0, c15, c12, 1
+        sub  r0, r0, r2
+        bx lr
 ```
 
 ----------------------------------------------------------------------
@@ -1353,15 +1452,15 @@ ave cost = 111.050003
 ```
 
 ----------------------------------------------------------------------
-### Step 13: wait for interrupt
+### Step 13: wait for interrupt (***NOTE: THIS WAS INCORRECT***)
 
-***NOTE: this was incorrect!***
-
-***NOTE: this was incorrect!***
-
-***NOTE: this was incorrect!***
+***I was so happy about this last year, but it was incorrect***.
+  - Turns out that wait-for-interrupt pauses the cycle counter.  So
+    of course using it looks faster.
   - Good example of how no safety-net + not cross-checking work leads to 
     giga-failures.
+  - Example code in [bug-demo-wfi](bug-demo-wfi)
+
 
 At this point I was stuck for a couple days on how to cut any more cycles
 without using virtual memory.  And then while in the shower remembered
@@ -1403,11 +1502,15 @@ the CPU in a quiescent state where nothing else is going on.  Thus, when
 the interrupt happens the CPU can jump right to the interrupt handler.
 
 ----------------------------------------------------------------------
-### Step 14: data cache, bcm access
+### Step 14: data cache, bcm access  (***NOTE: no wfi = no longer helps***)
+
+***NOTE: this no longer seems to help without wfi.  Am investigating***
+  - If you want to try it: use `Makefile.vm`
+  - Add vm_caches_on()` instead of `caches_enable()`.
+  - Look in `code/vm-enable.h` for the settings.
 
 At this point, I ran out of low-hanging fruit ideas for how to bum cycles,
 so turned on virtual memory to speed things up.   
-
 
 It sounds counter-intuitive that adding an extra layer of machinery helps
 speed in any way, but on the arm1176 virtual memory gives us (at least)
@@ -1544,8 +1647,9 @@ You should then look at your `.list` file to see that these three
 pieces are right next to each other.  I had to tell `gcc` to not
 reorder routines by adding the flag to the makefile:
 
-            CFLAGS +=  -fno-toplevel-reorder
-
+```
+    CFLAGS +=  -fno-toplevel-reorder
+```
 
 These changes got me down to about 98 cycles at steady state:
 ```

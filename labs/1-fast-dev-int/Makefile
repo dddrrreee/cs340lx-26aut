@@ -1,4 +1,4 @@
-SUBDIRS= code
+SUBDIRS= code bug-demo-wfi
 
 .PHONY: all check clean
 all check clean: $(SUBDIRS)
