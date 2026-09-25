@@ -57,6 +57,9 @@ void vm_on_cache(void) {
 
     // do write-back attribute.  try the others!
     attr = MEM_wb_alloc;
+    // attr = MEM_wt_noalloc;
+    // attr = MEM_wb_noalloc;
+
 
     k.code.attr         =
     k.heap.attr         =
@@ -69,8 +72,8 @@ void vm_on_cache(void) {
     // (see the arm manual).  
     //
     // i think it can be one of the following:
-    k.bcm.attr = MEM_device;    // 104 cycles
-    k.bcm.attr = MEM_share_dev; // 98 cycles
+    k.bcm.attr = MEM_share_dev; // slower
+    k.bcm.attr = MEM_device;    // faster
 
     // turn on vm and (potentially) define exception 
     // handlers.

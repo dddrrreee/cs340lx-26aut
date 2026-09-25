@@ -1,0 +1,40 @@
+PROGS = gpio-int.c
+
+COMMON_SRC = interrupt-asm.S
+
+# if you need to override the install
+BOOTLOADER = my-install
+
+
+
+
+# ave cost = 2018?
+# OPT_LEVEL = -Ofast
+
+
+# ave cost = 2128.800048
+# OPT_LEVEL = -O1
+
+# seems same as Ofast 2014
+OPT_LEVEL = -O3
+
+# our default optimization level.
+# OPT_LEVEL = -Og
+
+# automatically run the code
+RUN = 1
+
+
+
+CFLAGS +=  -fno-toplevel-reorder
+# LIBVM := $(CS240LX_2025_PATH)/labs/libvm-ident/code.staff
+
+# maybe just put in the .a
+LIBVM   := $(CS340LX_2026_PATH)/lib/libvm-ident0.0/
+INC     += -I$(LIBVM) -I$(LIBVM)/includes
+LIBS    += $(LIBVM)/libvm-ident.a
+
+include $(CS340LX_2026_PATH)/libpi/mk/Makefile.robust-v3
+
+$(LIBVM)/libvm-ident.a:
+	make -C $(LIBVM)  "RUN=0"
