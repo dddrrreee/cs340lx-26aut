@@ -7,7 +7,7 @@ Have you ever wanted to drive some big LED displays? Like these installed on the
 </p>
 <!-- (image credit: https://newyorkyimby.com/2019/05/one-times-squares-300-foot-long-led-screen-nearly-assembled-in-times-square.html) -->
 
-Well that's a bit too fancy, but it turns out the mono color version of these LED screens are actually just a bunch of shift registers! So should be quite easy to drive with our Pi (question mark?).
+Well that's a bit too fancy, but it turns out the mono color version of these LED screens are actually just a bunch of [shift registers](https://en.wikipedia.org/wiki/Shift_register)! So should be quite easy to drive with our Pi (question mark?).
 
 In this lab, we will explore how the cheapest, easiest, P10 LED display units work, how to abuse the hardware to make a fast driver for it, and how to chain them together to make a larger display. Colored displays are a bit more complicated, but could be a nice extension.
 
@@ -25,11 +25,19 @@ These headers are directional (look for arrows on the PCB), so the Pi input shou
 (img credit: https://bestengineeringprojects.com/interfacing-p10-led-display-with-arduino/)
 
 A bit of explanation of the signals:
-- **EN**: Global enable, active high. This is THE switch that turns on the display, which you can also use for PWM dimming.
+- **EN**: Global enable, active high (note this is opposite to many conventional shift registers). This is THE switch that turns on the display, which you can also use for PWM dimming.
 - **A, B**: Row select lines. These lines select which group of the interlaced rows to drive. More details on this below.
 - **CLK**: Clock line. This is the clock for the shift registers to move one bit of the data, on the rising edge.
-- **SCLK**: The latch clock line. This is the clock for the shift registers to latch the data into the output register, on the rising edge.
+- **SCLK**: The storage clock line (sometimes called the latch clock). This is the clock for the shift registers to flip the data into the output register, on the rising edge (committing current register data to the wire).
 - **DATA**: The data line. This is the serial data input for the shift registers.
+
+Since there's no formal documentation for these panels, and because they work like shift registers, a supplementary reading for more technical details about shift registers is here [74HC595](https://www.ti.com/lit/ds/symlink/sn74hc595.pdf).
+
+Term mapping:
+- **SRCLK** = **CLK**
+- **RCLK** = **SCLK**
+- **SER** = **DATA**
+- **OE** (active low on 595) = **EN** (active high on p10)
 
 One thing to note is the electronic properties of the panel. All of these digital signals expect 5V actively driven signals, which in ideal cases should be handled by a level shifter. However, the Pi's GPIO pins are 3.3V, which is above the logic threshold for the panel, and empirically experimented to work fine, but may become a blocker if you try to drive it very quickly or over long wires since parasitic capacitance may cause the signal to degrade. For the purposes of this lab, we will ignore this issue, but if you want to make a more robust driver, you should consider using a level shifter. With this said, the through output of the panel is re-driven to 5V, which is good for chaining but also means you should never connect the Pi directly to the output of the panel, as it will fry your Pi.
 
@@ -66,6 +74,7 @@ To take this a step further, we can abuse the Pi's DMA engine (since they are Tu
 The final deliverable of this lab is a driver that can drive the P10 display, and can bang out from a framebuffer with **zero CPU intervention**. The work on the CPU side is then very straightforward: fill the framebuffer according to the scan pattern, and the DMA engine will take it from there.
 
 - **More is more**: make a larger display by chaining multiple panels together, and parameterize the driver to handle different configurations.
-- **Colorful**: colored P10 displays are a bit more complicated, and the SPI trick may not work. Should still be doable with only DMA blocks.
 - **Dimming**: implement PWM dimming by varying the duty cycle of the EN line.
+- **Grayscale**: implement per pixel dimming by supporting brightness levels and skipping pixels in the scan pattern in accordance with it.
+- **Colorful**: colored P10 displays are a bit more complicated, and the SPI trick may not work. Should still be doable with only DMA blocks.
 - ... more ideas?
