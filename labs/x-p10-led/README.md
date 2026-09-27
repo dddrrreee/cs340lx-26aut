@@ -41,4 +41,31 @@ One of the most important things to understand about these displays is how they 
 <p align="center">
   <img src="docs/scan-pattern.png" width="850" />
 </p>
-(img credit: Claude)
+(image credit: Tianle's notes + Claude)
+
+## Driving the display
+With the scan pattern in mind, we can now figure out what goes on the wire. To summarize it, driving the display involves:
+- Setting address lines A and B to select the row group to drive.
+- Shifting data for the selected row group into the shift registers, one bit at a time, using the CLK line.
+- Latching the data into the output register using the SCLK line.
+- Enabling the display using the EN line for a short period of time, to display the data.
+
+But due to the grouping of the rows, this actually only drives 1/4 of the entire display, in disjoint lines...
+
+So the intended driving logic is to rapidly cycle through the row groups, and for each group, shift in the data for that group, latch it, and enable the display. This rapid cycling creates the illusion of a fully lit display to the human eye, but also keeps the CPU in a busy loop.
+
+## Exploiting the hardware
+An easy trick is just to use the Pi's SPI peripheral to drive the CLK and SCLK lines, which is much faster than bit-banging. Try offloading the data shifting to the SPI peripheral, and use DMA to feed it, so that the CPU can do other stuff as one row group is on the fly. (common gotcha here: SPI does TX and RX at the same time, and we are not using the RX at all, but the fifo fills and the hardware may just stall. Drain the RX fifo as well to avoid this.)
+However, you will still need to manually toggle the A/B, latch, and enable lines, which will still require the CPU to come back periodically.
+
+To take this a step further, we can abuse the Pi's DMA engine (since they are Turing-complete), to handle all of that for us. With the infrastructure from the DMA lab from 240lx, this should be rather straightforward.
+
+(Note: the core spirit of this lab is actually the single line above, and the rest is kinda busy work...)
+
+## Final deliverable & extensions
+The final deliverable of this lab is a driver that can drive the P10 display, and can bang out from a framebuffer with **zero CPU intervention**. The work on the CPU side is then very straightforward: fill the framebuffer according to the scan pattern, and the DMA engine will take it from there.
+
+- **More is more**: make a larger display by chaining multiple panels together, and parameterize the driver to handle different configurations.
+- **Colorful**: colored P10 displays are a bit more complicated, and the SPI trick may not work. Should still be doable with only DMA blocks.
+- **Dimming**: implement PWM dimming by varying the duty cycle of the EN line.
+- ... more ideas?
