@@ -39,7 +39,7 @@ Term mapping:
 - **SER** = **DATA**
 - **OE** (active low on 595) = **EN** (active high on p10)
 
-One thing to note is the electronic properties of the panel. All of these digital signals expect 5V actively driven signals, which in ideal cases should be handled by a level shifter. However, the Pi's GPIO pins are 3.3V, which is above the logic threshold for the panel, and empirically experimented to work fine, but may become a blocker if you try to drive it very quickly or over long wires since parasitic capacitance may cause the signal to degrade. For the purposes of this lab, we will ignore this issue, but if you want to make a more robust driver, you should consider using a level shifter. With this said, the through output of the panel is re-driven to 5V, which is good for chaining but also means you should never connect the Pi directly to the output of the panel, as it will fry your Pi.
+One thing to note is the electronic properties of the panel. All of these digital signals expect 5V actively driven signals, which in ideal cases should be handled by a level shifter. However, the Pi's GPIO pins are 3.3V, which is above the logic threshold for the panel, and empirically experimented to work fine, but may become a blocker if you try to drive it very quickly or over long wires since parasitic capacitance may cause the signal to degrade. For the purposes of this lab, we will ignore this issue, but if you want to make a more robust driver, you should consider using a level shifter. With this said, the through output of the panel is re-driven to 5V, which is good for chaining but also means you should **never connect the Pi directly to the output of the panel, as it will fry your Pi**.
 
 **Common gotcha**: Some of these boards have a protection mechanism, that only allows driving the lights for a short (~0.1 second) period of time, and automatically turns off after a bit. If you are trying with some static PoC, make sure to blink the display periodically so that you can see the output.
 
@@ -64,6 +64,8 @@ One of the most important things to understand about these displays is how they 
   <img src="docs/scan-pattern.png" width="850" />
 </p>
 (image credit: Tianle's notes + Claude)
+
+With in each byte, the bits are scanned MSB first, so the SPI hardware should handle it for you just fine with in a byte.
 
 ## Driving the display
 With the scan pattern in mind, we can now figure out what goes on the wire. To summarize it, driving the display involves:
