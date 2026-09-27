@@ -43,6 +43,20 @@ One thing to note is the electronic properties of the panel. All of these digita
 
 **Common gotcha**: Some of these boards have a protection mechanism, that only allows driving the lights for a short (~0.1 second) period of time, and automatically turns off after a bit. If you are trying with some static PoC, make sure to blink the display periodically so that you can see the output.
 
+## Connections and tests
+To fully exploit the SPI hardware on the Pi, we will be connecting the shift register lines to the SPI peripheral. The test binary uses the following connections, use the same if you want to run it to test, otherwise the OE, A, B, SCLK pins can be arbitrary.
+
+```
+#define OE 25
+#define ADD_A 22
+#define ADD_B 23
+#define CLK 11
+#define SCLK 24
+#define DATA 10
+```
+
+To test if your connections are correct, upload this staff binary to your Pi, and check it does what it says: <https://sites.tianleyu.com/~unics/cs140e/p10-lab/hw.bin>
+
 ## Scan pattern
 One of the most important things to understand about these displays is how they are scanned. Unlike the classic I/P style (e.g., 720p/1080i) scanning on screens, the scan pattern of these boards gets quite complicated, and since there's no unified standard, different manufacturers tend to invent different scan patterns. It will be a good exercise to figure out the scan pattern of your board, but since it's mainly busy work, just use the following one that's been empirically determined to work for the boards we have.
 
