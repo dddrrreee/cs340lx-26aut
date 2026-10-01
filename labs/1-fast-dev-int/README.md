@@ -1,6 +1,34 @@
+## ***UPDATE***
+
+So, it turns out that we were taking double interrupts.
+  - Thanks to Agniv for finding that `cpsid f, #SUPER_MODE` would "speed things 
+    up" ($100 bounty).  It turns out that this was not b/c of the cpsid,
+    but instead b/c it disabled the subsequent interrupts.
+  - Thanks to Max for mentioning that he thought we might have double ints.
+
+To finish lab:
+  1. You should fix double interrupt
+    1. Detect that we are taking them by having a counter in your FIQ.
+    2. Check the counter in your timing code.
+    3. Fix it.  Hint: the event register is apparently either not the
+       the GPIO bank, or memory ordering without "waiting for all effects
+       to commit" is not sufficient (or both).  In either case, the need
+       is the same.
+    4. I have around 107-108 cycles per interrupt at the end without overclock.
+    5. Discover some interesting weird features by using the CPSIE (not CPSID)
+       hack so you switch modes and jump back.
+  2. Then: Make the initial run fast with the icache prefetching.
+  3. Then: Do simple overclock (next week will be fancy).
+
+I'm going to fix the lab writeup over the weekend.  But as a reminder:
+  - WFI (wait for interrupt) pauses the performance counter PMU unit.
+  - Sai and James' hack no longer seems to speed things up.
+  - VM no longer seems to speed anything up.
+  - So you can don't have to do those parts.   
+  - WTS: maybe there is a way to use these to bum cycles: $100 bounty.
+
+------------------------------------------------------------------------
 ## Making device interrupts fast
-
-
 
 This is a fun lab: you'll make GPIO interrupts as fast as possible.
 The lab goes from about 3300 cycles down to 98 --- roughly a 33x speedup.
@@ -1116,15 +1144,17 @@ Note:
 
 ***UPDATE***
   - I started using the PMU code from 240lx to look at things.
-  - It appears the instruction stalls increase after you flip and then
-    go back down with nops.
+  - It appears the instruction stalls increase dramatically after you flip
+    and down (some) with nops.  Writeback drain/stall goes up by 1 and
+    then down by 1 with nops.
   - Open question: why.
 
 So, for the initial (1) clear event and then (2) set the global 
 register we get about 241 instruction stalls:
 ```
-        101 : data dependency stall
-        241: instruction stall [tlb/cache miss]
+        @ 101 : data dependency stall
+	    @ 4 : writeback drained (stall?)
+        @ 241: instruction stall [tlb/cache miss]
         str event0_val, [event0]                @ store to clear event.
         mcr 15, 0, one, cr13, cr0, 3          @ signal that we had an int
 ```
@@ -1132,6 +1162,7 @@ register we get about 241 instruction stalls:
 If we flip them it jumps to 385:
 ```
         @ 101 : data dependency stall
+	    @ 5 : writeback drained (stall?)
         @ 385: instruction stall [tlb/cache miss]
         mcr 15, 0, one, cr13, cr0, 3          @ signal that we had an int
         str event0_val, [event0]                @ store to clear event.
@@ -1141,6 +1172,7 @@ If you add nops it goes down to 290:
 
 ```
         @ 101 : data dependency stall
+	    @ 4 : writeback drained (stall?)
         @ 290: instruction stall [tlb/cache miss]
         mcr 15, 0, one, cr13, cr0, 3          @ signal that we had an int
         str event0_val, [event0]                @ store to clear event.
