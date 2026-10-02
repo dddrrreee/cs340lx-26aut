@@ -64,7 +64,7 @@ Why do we do this lab when we already did lab 1?
     since very similar code let's you write (and monitor) fast, accurate
     bit-banged transmitters.
 
-  - A final but massively huge reason: because everyone did lidar using
+  - A final but massively huge reason: because everyone did lidar [2025] using
     a bit-banged UART receive, no one was able to record more than
     a handful of packets (less than 1%?).  Even a moderately sped up
     version of today's code will let you easily make a sw-uart receive
@@ -121,7 +121,7 @@ as possible.  The code is roughly the same as examples you've seen in
 
 #### Checkoff
 
-Checkoff (tuesday):
+Checkoff (th):
   1. Make the analyzer fast.  
   2. Use any method you want.  However, make sure you do use the new 
      tricks we discuss (they will be annotated in the README below, 
