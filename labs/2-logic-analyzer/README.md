@@ -988,12 +988,12 @@ NOTE:
 ### The rest of the hacks.
 
 NOTE: 
-  -If you see this do a pull for more README updates by this weekend.
-  -If you see this do a pull for more README updates by this weekend.
-  -If you see this do a pull for more README updates by this weekend.
-  -If you see this do a pull for more README updates by this weekend.
-  -If you see this do a pull for more README updates by this weekend.
-  -If you see this do a pull for more README updates by this weekend.
+ - If you see this do a pull for more README updates by this weekend.
+ - If you see this do a pull for more README updates by this weekend.
+ - If you see this do a pull for more README updates by this weekend.
+ - If you see this do a pull for more README updates by this weekend.
+ - If you see this do a pull for more README updates by this weekend.
+ - If you see this do a pull for more README updates by this weekend.
 
 Steps:
   1. Write in asm.
