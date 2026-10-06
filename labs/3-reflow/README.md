@@ -1,4 +1,4 @@
-## Reflow - how SMT soldering works
+## Reflow - how [SMT](https://en.wikipedia.org/wiki/Surface-mount_technology) soldering works
 
 Soldering... A long-lived tradition of joining metals together, and a critical skill for any electronics engineer.
 Wait this is a CS class, no? Well it's kinda fun and can give you some control over the hardware that you are working with, so, worth a try.
@@ -26,7 +26,7 @@ In industrial processes, those are all automated, with framed stencil in standar
 The HUGE board is the UART hat for Pis, and we use it to practice our SMT skills.
 
 Steps:
-1. Parts and placement map: look through the [HUGE board placement map](https://sites.tianleyu.com/~unics/cs140e/huge.pdf), and gather all the parts you will need for it. Trick for distinguishing the 0805 resistors: read the three-digit number on top of them, and use first two numbers as the value, times 10^(last number). E.g., 103 = 10 * 10^3 = 10k ohm, 473 = 47 * 10^3 = 47k ohm, 104 = 10 * 10^4 = 100k ohm, etc. If you find the number to be hard to read, use a multimeter to measure the actual resistance of them. For the capacitors, they are all 0.1uF, so no need to distinguish them (turns out the decoupling 4.7uF is optional, and 0.1uF is big enough for the CMOS driving TX and RX lines).
+1. Parts and placement map: look through the [HUGE board placement map](https://sites.tianleyu.com/~unics/cs140e/huge.pdf), and gather all the parts you will need for it. Trick for distinguishing the 0805 resistors: read the three-digit number on top of them, and use first two numbers as the value, times 10^(last digit). E.g., `103 = (10) * (10^3) = 10 * 10^3 = 10k ohm`, `473 = (47) * (10^3) = 47 * 10^3 = 47k ohm`, etc. You can also use the [calculator](https://www.digikey.com/en/resources/conversion-calculators/conversion-calculator-smd-resistor-code) here. If you find the number to be hard to read, use a multimeter to measure the actual resistance of them. For the capacitors, they are all 0.1uF, so no need to distinguish them (turns out the decoupling 4.7uF is optional, and 0.1uF is big enough for the CMOS driving TX and RX lines).
 2. Apply solder paste: This is the most critical step, and doing it right will save significant effort later and reduce the number of rounds of reflow. Align the stencil with the pads carefully, apply a decent pressure, so that the stencil does not move and there's no gap between the stencil and the board. Then apply solder paste evenly, with another board / card, and scrape off the excess paste. Remove the stencil carefully, and check if the paste is applied evenly on all pads. It is OK for the paste to span a bit between pads, as the surface tension of the molten solder will pull it back to the pads during reflow - just make sure it's not too little that later adding more can be painful. A reference amount of paste (for the CP2102 chip and USB port) is roughly:
 
 <p align="center">
@@ -58,11 +58,11 @@ Tips: when the board is removed from the heat plate, press down gently on the US
 If you read anything below 10k ohm, something is wrong, and there may be pins shorted together. If you get anything below 1k ohm or the continuity buzzer goes off, DO NOT CONNECT IT TO YOUR LAPTOP. You will likely need some rework to fix the short.
 
 7. Test 2, USB enumeration: Connect the board to your laptop, and use `lsusb` on Linux/Mac (or `System Information` on Mac), or, on Windows, use `Device Manager` to check if the board enumerates correctly.
-The board should show up as `10c4:ea60 Silicon Labs CP210x UART Bridge`. Note the vendor and product ID, and they should be a perfect match. Do not have your Parthiv board connected since it has the same chip (in different package format). If it doesn't show up, check the errors in USB enumeration (I don't actually know about how on Mac, but on Linux, `dmesg` should give some hints, and Windows device manager will should the error code). If it does not work, try connect the USB cable on the board side with a different orientation, since the pins used are different, and it might be the specific pair was not soldered properly. If it still doesn't work, you may need to reflow the USB connector, or the CP2102 chip, or both. With a multimeter, check for continuity between D+ and D-. and they should not be shorted. Then check for the corresponding pins on the CP2102 chip and the USB connector.
+The board should show up as `10c4:ea60 Silicon Labs CP210x UART Bridge`. Note the vendor and product ID, and they should be a perfect match. Do not have your Parthiv board connected since it has the same chip (in different package format). If it doesn't show up, check the errors in USB enumeration (I don't actually know about how on Mac, but on Linux, `dmesg` should give some hints, and Windows device manager will should the error code). If it does not work, try connect the USB cable on the board side with a different orientation, since the pins used are different, and it might be the specific pair was not soldered properly. If it still doesn't work, you may need to re-reflow (recook) the USB connector, or the CP2102 chip, or both. With a multimeter, check for continuity between D+ and D-. and they should not be shorted. Then check for the corresponding pins on the CP2102 chip and the USB connector.
 
 Tips: it is hard to hold a probe against a single pin of the CP2102 chip, so push it against two pins, (e.g., data pin left and the pin to its left).
 
-8. Connectors for the pi: plug in and solder the through-hole connectors (not all of them are used, and we only need to solder the 5V, 3v3, GND, TX, RX pins, to locate them, refer to <https://pinout.xyz>).
+8. Soldering the connectors for the pi & preparing for e2e test: plug in and solder the through-hole connectors (not all of them are used, and we only need to solder the 5V, 3v3, GND, TX, RX pins, to locate them, refer to <https://pinout.xyz>).
 
 <p align="center">
   <img src="docs/pinout.png" width="350" />
@@ -70,7 +70,7 @@ Tips: it is hard to hold a probe against a single pin of the CP2102 chip, so pus
 
 The pins marked red are the ones that need to be soldered for testing. However, to help with the mechanical stability of the board, it is recommended to solder a few pins on the other side as well.
 
-9. End to end test: connect the board with the Pi, and use your favorite bootloader to download a program to the Pi. Since this board (at current version) does not have a reset switch, refer to <https://sites.tianleyu.com/~unics/cs140e/cp210x.c> for software-issued reset. If your board can download and run a program, congratulations, you have successfully soldered your first SMT board!
+9. End to end test: connect the board with the Pi, and use your favorite bootloader to download a program to the Pi. Since this board (at current version) does not have a reset switch, refer to <https://sites.tianleyu.com/~unics/cs140e/cp210x.c> for software-issued reset. If your board can download and run a program, congratulations, you have successfully soldered your first SMT board! *Note: integrating the reset feature is not required, and you can manually reset the Pi by power cycling it.*
 
 
 ## Tips and gotchas
@@ -78,7 +78,7 @@ The pins marked red are the ones that need to be soldered for testing. However, 
 - The paste application is the most critical step, applying too much or too little will lead to either short or open circuits. A common trick is to lean towards the "more" side than less, since removing excess paste is easier than adding more evenly.
 - Pick-and-place is a bit tricky for components which have polarities, like the LED indicators, double check the orientation before placing them on the board.
 - Do not apply pressure on chips with leads on the bottom, like the CP2102, since it may cause the paste to squeeze out and create a short. Just let the paste hold the chip in place, and it will be fine.
-- A good trick to check if a chip is well soldered: when the board is heated up, the chip should move itself into the perfect position, and you can push it a bit to see if it returns by itself. If it does not, then the paste is not applied evenly, and you may need to reflow again.
+- A good trick to check if a chip is well soldered: when the board is heated up, the chip should move itself into the perfect position, and you can push it a bit to see if it returns by itself. If it does not, then the paste is not applied evenly, and you may need to reflow (cook) again.
 - The USB connector is a bit tricky and quite sensitive to the amount of paste applied, when a short is created between the pins, it becomes quite difficult to remove the excess paste, and you may want to replace it with a new connector instead. When paste is too little, can try to tilt the connector up a bit so that the pins are in well contact with the pads.
 - For excessive paste, remove the component and use the tweezers to gently scrape off the excess paste - you should get little balls of solder paste rolling easily, completely remove them before replacing the component.
 - Keep the temporarily removed components on the board, to the side of the pads, so that they can be kept warm and ready to be placed whenever you are ready.
