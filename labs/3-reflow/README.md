@@ -84,4 +84,4 @@ The pins marked red are the ones that need to be soldered for testing. However, 
 - Keep the temporarily removed components on the board, to the side of the pads, so that they can be kept warm and ready to be placed whenever you are ready.
 - Hot air gun is a good tool for SMT rework, but it can fry the desk quite easily, so we will avoid using it if possible, as the heat plate should be sufficient given that we are using a low temperature solder paste.
 
-(Acknowledgement: thanks to [YTH](https://ythovo.com) for alpha-testing the lab and providing feedback & gotchas)
+(Acknowledgement: thanks to [YTH](https://ythovo.com) for alpha-testing the lab and providing feedback & gotchas, Thomason Z. for proof reading & feedback)
