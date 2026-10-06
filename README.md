@@ -84,6 +84,8 @@ Likely devices:
   - sbcs: pico 2, pico, ox64, pi zero 2
 
 Tentative things I'd like to do (won't do all)
+  - Bare metal on the tenstorrent quiet boxes we have from them.  Riscv+GPUs.
+    Fun b/c no cloud, just bare metal.
   - Doing more Turing complete DMA (based on Max Cura's hack) 
   - Speed up interrupts/exceptions by 50x.
   - A solid network boot loader that works over RF, sound, light, IR.
