@@ -66,6 +66,7 @@ One of the most important things to understand about these displays is how they 
 (image credit: Tianle's notes + Claude)
 
 With in each byte, the bits are scanned MSB first, so the SPI hardware should handle it for you just fine with in a byte.
+Common gotcha: this particular screen uses bit 0 as "ON" and bit 1 as "OFF", which is opposite to the convention of most shift registers. So if you are trying to drive it with a framebuffer, you may need to invert the bits.
 
 ## Driving the display
 With the scan pattern in mind, we can now figure out what goes on the wire. To summarize it, driving the display involves:
