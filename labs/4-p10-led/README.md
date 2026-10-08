@@ -65,7 +65,7 @@ One of the most important things to understand about these displays is how they 
 </p>
 (image credit: Tianle's notes + Claude)
 
-With in each byte, the bits are scanned MSB first, so the SPI hardware should handle it for you just fine with in a byte.
+Within each byte, the bits are scanned MSB first, so the SPI hardware should handle it for you just fine with in a byte.
 Common gotcha: this particular screen uses bit 0 as "ON" and bit 1 as "OFF", which is opposite to the convention of most shift registers. So if you are trying to drive it with a framebuffer, you may need to invert the bits.
 
 ## Driving the display
@@ -80,6 +80,9 @@ But due to the grouping of the rows, this actually only drives 1/4 of the entire
 So the intended driving logic is to rapidly cycle through the row groups, and for each group, shift in the data for that group, latch it, and enable the display. This rapid cycling creates the illusion of a fully lit display to the human eye, but also keeps the CPU in a busy loop.
 
 **Power concerns**: The peak power draw of these displays can be up to 15w, which way beyond the power budget of our board. To prevent damage to the USB power and the Pi, start with shorter pulses on OE (my starting point was 2ms [PWM](https://en.wikipedia.org/wiki/Pulse-width_modulation) with 1% duty cycle). Empirically, if you don't always have all the lights on, a ~50% duty cycle is a sweet spot between brightness and power.
+
+## Next?
+You may find the instructions in this lab to be exceptionally vague, and there's no starter code - that's intended - since the fun part is the exploration of the hardware. Start trying by sending bits to it, and gradually get it to work. Start simple with bit-banging, and try to show simple shapes on the display. After getting comfortable with the strange scan pattern, you can start
 
 ## Exploiting the hardware
 An easy trick is just to use the Pi's SPI peripheral to drive the CLK and SCLK lines, which is much faster than bit-banging. Try offloading the data shifting to the SPI peripheral, and use DMA to feed it, so that the CPU can do other stuff as one row group is on the fly. (common gotcha here: SPI does TX and RX at the same time, and we are not using the RX at all, but the fifo fills and the hardware may just stall. Drain the RX fifo as well to avoid this.)
