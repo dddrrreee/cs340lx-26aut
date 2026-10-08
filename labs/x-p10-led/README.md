@@ -79,6 +79,8 @@ But due to the grouping of the rows, this actually only drives 1/4 of the entire
 
 So the intended driving logic is to rapidly cycle through the row groups, and for each group, shift in the data for that group, latch it, and enable the display. This rapid cycling creates the illusion of a fully lit display to the human eye, but also keeps the CPU in a busy loop.
 
+**Power concerns**: The peak power draw of these displays can be up to 15w, which way beyond the power budget of our board. To prevent damage to the USB power and the Pi, start with shorter pulses on OE (my starting point was 2ms [PWM](https://en.wikipedia.org/wiki/Pulse-width_modulation) with 1% duty cycle). Empirically, if you don't always have all the lights on, a ~50% duty cycle is a sweet spot between brightness and power.
+
 ## Exploiting the hardware
 An easy trick is just to use the Pi's SPI peripheral to drive the CLK and SCLK lines, which is much faster than bit-banging. Try offloading the data shifting to the SPI peripheral, and use DMA to feed it, so that the CPU can do other stuff as one row group is on the fly. (common gotcha here: SPI does TX and RX at the same time, and we are not using the RX at all, but the fifo fills and the hardware may just stall. Drain the RX fifo as well to avoid this.)
 However, you will still need to manually toggle the A/B, latch, and enable lines, which will still require the CPU to come back periodically.
