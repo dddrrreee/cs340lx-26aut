@@ -69,15 +69,25 @@ Within each byte, the bits are scanned MSB first, so the SPI hardware should han
 Common gotcha: this particular screen uses bit 0 as "ON" and bit 1 as "OFF", which is opposite to the convention of most shift registers. So if you are trying to drive it with a framebuffer, you may need to invert the bits.
 
 ## Driving the display
-With the scan pattern in mind, we can now figure out what goes on the wire. To summarize it, driving the display involves:
+With the scan pattern in mind, we can now figure out what goes on the wire. To summarize it, driving the **a group of lights** involves:
 - Setting address lines A and B to select the row group to drive.
 - Shifting data for the selected row group into the shift registers, one bit at a time, using the CLK line.
 - Latching the data into the output register using the SCLK line.
 - Enabling the display using the EN line for a short period of time, to display the data.
 
-But due to the grouping of the rows, this actually only drives 1/4 of the entire display, in disjoint lines...
+Due to the **grouping** of the rows, this actually only drives 1/4 of the entire display, in disjoint lines...
 
 So the intended driving logic is to rapidly cycle through the row groups, and for each group, shift in the data for that group, latch it, and enable the display. This rapid cycling creates the illusion of a fully lit display to the human eye, but also keeps the CPU in a busy loop.
+
+Full driving logic:
+```
+while True:
+  for group in [0, 1, 2, 3]:
+      A/B = group number (see scan pattern)
+      shift in data for group, bit by bit, on the rising edge of CLK
+      latch data by pulsing SCLK
+      enable display for a short period of time by pulsing EN (OE)
+```
 
 **Power concerns**: The peak power draw of these displays can be up to 15w, which way beyond the power budget of our board. To prevent damage to the USB power and the Pi, start with shorter pulses on OE (my starting point was 2ms [PWM](https://en.wikipedia.org/wiki/Pulse-width_modulation) with 1% duty cycle). Empirically, if you don't always have all the lights on, a ~50% duty cycle is a sweet spot between brightness and power.
 
@@ -85,7 +95,8 @@ So the intended driving logic is to rapidly cycle through the row groups, and fo
 You may find the instructions in this lab to be exceptionally vague, and there's no starter code - that's intended - since the fun part is the exploration of the hardware. Start trying by sending bits to it, and gradually get it to work. Start simple with bit-banging, and try to show simple shapes on the display. After getting comfortable with the strange scan pattern, you can start
 
 ## Exploiting the hardware
-An easy trick is just to use the Pi's SPI peripheral to drive the CLK and SCLK lines, which is much faster than bit-banging. Try offloading the data shifting to the SPI peripheral, and use DMA to feed it, so that the CPU can do other stuff as one row group is on the fly. (common gotcha here: SPI does TX and RX at the same time, and we are not using the RX at all, but the fifo fills and the hardware may just stall. Drain the RX fifo as well to avoid this.)
+An easy trick is just to use the Pi's SPI peripheral (p. 148 in the datasheet, **not** the aux/mini SPI since no DREQ support) to drive the CLK and SCLK lines, which is much faster than bit-banging. Try offloading the data shifting to the SPI peripheral, and use DMA to feed it, so that the CPU can do other stuff as one row group is on the fly. (common gotcha here: SPI does TX and RX at the same time, and we are not using the RX at all, but the fifo fills and the hardware may just stall. Drain the RX fifo as well to avoid this.)
+
 However, you will still need to manually toggle the A/B, latch, and enable lines, which will still require the CPU to come back periodically.
 
 To take this a step further, we can abuse the Pi's DMA engine (since they are Turing-complete), to handle all of that for us. With the infrastructure from the DMA lab from 240lx, this should be rather straightforward.
