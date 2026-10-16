@@ -15,8 +15,9 @@ This lab unfortunately has no starter code because it is in fact officially impl
 ## DAC Setup
 Bleep bloops are airwave thingys hitting your eardrums. You cannot have airwaves using just 0s and 1s, as they have to be expressed in *amplitudes* and not *bits*. To fix this, we are going to use a Digital Audio Converter (DAC). Such a device converts *digital* audio signals in terms of 0 and 1s into *analog* signals which is then amplified by your headphones and it goes bleep bloop.
 
-> **DO A PULL IF YOU SEE THIS, I PROBABLY HAVEN'T GOTTEN THE DAC YET SO AM BLUFFING USING A DIFFERENT DAC**
-> Something something wire the things into the ports and the places, and pull the pins up until bleep bloop is enabled. brrrr. Read the datasheet or something IDK.
+To figure out how to make your bleep bloop machine bloop, you can boop the boop in the following pictoor thanks to Max Cura:
+
+![wiring](./docs/pictooors/wire.png)
 
 ## i2s intro (DAC Side)
 Audio is banged out a block at a time to i2s, often in 32 bits at a time. We are going to use the following format for standardisation and the fact that the DAC has been tested:
