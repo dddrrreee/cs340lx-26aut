@@ -1,1 +1,24 @@
 .clangd
+
+# build outputs
+*.o
+*.d
+*.a
+*.elf
+*.bin
+*.list
+*.list-v
+objs/
+
+# staff-provided prebuilt binaries (keep these tracked)
+!libpi/staff-objs/
+!libpi/staff-objs/*.o
+!lib/libvm-ident*/*.a
+
+# editor / OS cruft
+*.swp
+*~
+.DS_Store
+.vscode/
+compile_commands.json
+.cache/
