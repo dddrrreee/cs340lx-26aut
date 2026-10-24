@@ -558,3 +558,9 @@ This way, we will have (almost) no code redundancy! ("almost" because we still n
 ### Extension F. Port real-world shared object files.
 
 If you're feeling ambitious, you can go beyond what I did by porting real-world shared libraries to the R/pi and using your dynamic linker to call them from your executables. A good starting point is porting simple functions like `putc` from the standard C library (`libc.so`).
+
+### Extension G. DWARF (a lab from last year's CS340LX)
+
+In this lab, we deliberately ignored some ELF sections. Most of these sections belong to the **DWARF Debugging Information Format Standard**, which provides runtime-accessible debugging information. By building your own DWARF parser, you can extract various debugging information of a binary at runtime. It will uncover what modern source-level debuggers actually do: how they set breakpoints, print the current file name and line number, and much more. It also allows you to implement a wide range of powerful features. For instance, you could build your own custom GDB-like debugger from scratch (which was my final project for CS240LX)!
+
+[The lab is here](https://github.com/dddrrreee/cs340lx-25aut/tree/main/labs/8-elf-dwarf)
