@@ -138,7 +138,7 @@ typedef struct {
 void load_elf(char *filename, char *base);
 
 // Verify the ELF header. We'll do only a few checks as an exercise.
-// Refer to 1-3 of ELF.pdf for the ELF header format
+// Refer to 1-3 of docs/ELF.pdf for the ELF header format
 void verify_elf(elf32_header *e_header);
 
 // Zero-initialize the .bss section
@@ -148,7 +148,7 @@ void verify_elf(elf32_header *e_header);
 //      - Thankfully, the .bss section is the only section that has sh_type == SHT_NOBITS
 //        for our case. So we can rely on this for now.
 //   - Zero-initialize the .bss section
-// Refer to 1-4, 1-9, 1-10, and 1-13
+// Refer to docs/ELF.pdf pages 1-4, 1-9, 1-10, and 1-13
 void bss_zero_init(elf32_header *e_header);
 
 // Jump to the ELF file's entry point.
