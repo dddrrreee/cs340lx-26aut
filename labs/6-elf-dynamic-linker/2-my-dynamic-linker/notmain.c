@@ -8,17 +8,17 @@ void notmain() {
 
     // Extension: all of the below can be done on the pi-side bootloader
 
-    // Load libpi.so into memory (use the code from part 1)
+    // Load libpi.so into memory (we use the code from part 1)
     load_elf(libpi_filename, libpi_base);
 
     // Now libpi.so is fully loaded in memory, starting at 0x1000'0000
     // We can now start parsing it
 
-    // Verify the ELF header (use the code from part 1)
+    // Verify the ELF header (we use the code from part 1)
     elf32_header *e_header = (elf32_header *)libpi_base;
     verify_elf(e_header);
 
-    // Zero-initialize the .bss section (use the code from part 1)
+    // Zero-initialize the .bss section (we use the code from part 1)
     bss_zero_init(e_header);
 
     // Step 1. Locate all the essential sections related to dynamic linking
