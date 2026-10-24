@@ -85,7 +85,7 @@ We're copying files from 3 directories, each serving a different purpose:
 - `0-my-static-tests`: make sure you generated `libpi.a` from the first step and run `make`. This will create statically linkned ELF executables we use for part 1. **Copy all `*.elf` files (`0-static.elf`, `1-static.elf`, `2-static.elf`, `3-static.elf`) to your SD card**.
 - `0-my-dynamic-tests`. make sure you generated `libpi.so` from the first step and run `make`. This will create dynamically linked ELF executables you need for part 2, 3, and extensions. **Copy all `*.elf` files (`0-dyn.elf`, `1-dyn.elf`, `2-dyn.elf`, `3-dyn.elf`) to your SD card**.
 
-I highly recommend reading the build commands in the Makefiles and inspecting the helper files generated (`*.readelf`, `*.list`). But if you're short on time, just make sure all the required files are copied to the SD card before moving on to Part 1.
+I recommend reading the build commands in the Makefiles and inspecting the helper files generated (`*.readelf`, `*.list`). But if you're short on time, just make sure all the required files are copied to the SD card before moving on to Part 1.
 
 When you run `ls` on your SD card, you should see:
 
