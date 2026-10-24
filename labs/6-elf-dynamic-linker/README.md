@@ -58,7 +58,7 @@ The **ELF Header** is the first component of an ELF file and contains general me
 
 The **Program Header Table** describes how to load the ELF file into memory. Each entry in the program header table corresponds to a *segment* and tells the loader which parts of the file should be mapped into memory, where in the virtual memory space they should be loaded, what permissions they require (read, write, execute), and their size in the file and in memory. This table is essential during runtime but not during compile-time. 
 
-If we were being really precise, we would use the R/pi’s virtual memory system to map segments and enforce access controls according to the program header table. This is useful because it allows us to avoid loading unnecessary parts of the ELF binary (e.g., `.symtab`), prevent execution of non-executable segments, and etc. This would make a great extension--we already have all the pieces needed. But for today, *we ignore the program header table*.
+If we were being really precise, we would use the R/pi’s virtual memory system to map segments and enforce access controls according to the program header table. This is useful because it allows us to avoid loading unnecessary parts of the ELF binary (e.g., `.symtab`), prevent execution of non-executable segments, and etc. This would make a great extension--we already have all the pieces needed. **But for today, we will ignore the program header table**.
 
 **Sections** are the actual contents of the binary: code, data, symbols, relocation information, and much more. Common sections include `.text`, `.data`, `.bss`, `symtab`, etc.
 
