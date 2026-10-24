@@ -9,3 +9,5 @@ static-deps-src/
 0-my-libpi/objs
 0-my-static-tests/objs
 0-my-static-tests/*-static.elf
+0-my-dynamic-tests/objs
+0-my-dynamic-tests/*-dyn.elf
