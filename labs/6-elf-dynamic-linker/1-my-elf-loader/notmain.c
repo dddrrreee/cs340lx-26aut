@@ -37,7 +37,7 @@ void notmain() {
     //      - Thankfully, the .bss section is the only section that has sh_type == SHT_NOBITS
     //        for our case. So we can rely on this for now.
     //   - Zero-initialize the .bss section
-    // Refer to 1-4, 1-9, 1-10, and 1-13
+    // Refer to docs/ELF.pdf pages 1-4, 1-9, 1-10, and 1-13
     bss_zero_init(e_header);
 
     // Step 3. Jump to the entry point of the ELF file.

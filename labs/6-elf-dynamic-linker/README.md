@@ -121,7 +121,7 @@ Now that all required files are on the SD card, it's time to begin reading and e
 
 But before we even begin, who should be loading and executing the ELF files?
 
-If we are to build a more "complete" system, ELF loading and linking would typically be handled by the pi-side bootloader, so that we can simply send a full ELF executable through our Unix-side bootloader. This is a great extension (and how I did it in 140E), but it can be very frustrating to debug, especially when you have to reinsert the SD card every time you recompile. Thus, today's hack:
+If we are to build a more "complete" system, ELF loading and linking would typically be handled by the pi-side bootloader, so that we can simply send a full ELF executable through our Unix-side bootloader. This is a great extension (and how I did it for my 140E final project), but it can be very frustrating to debug, especially when you have to reinsert the SD card every time you recompile. Thus, today's hack:
 
 - We put the ELF binaries we want to load in the SD card (done in part 0)
 - After implementing our ELF loader, we compile it and strip off all ELF/linker metadata (as we usually do), and execute this through our already-existing unix/pi bootloader infrastructure
@@ -187,11 +187,11 @@ Also, we need to be very careful about memory layout. At this point, we’re loa
 So the strategy:
 
 - The pi-side bootloader starts at 0x0020'0000, same as how we implemented it in CS140E
-- The ELF loader is placed at 0x0001'0000, using the `.space` + `b skip` trick in `start.S` as we did in CS140E. This is required because the pi-side bootloader loads programs at 0x8000, and this is low enough address to collide with our test program, which should load at 0x0. Also note that while 0x0001'0000 is also a pretty low address, we can get away with this because the test programs for today are small. If we increase the starting address the bootloading time gets longer. If you don't like this: just rewrite the pi-side bootloader to do the ELF parsing and loading (extension).
+- The ELF loader is placed at 0x0001'0000, using the `.space` + `b skip` trick in `start.S` as we did in CS140E. This is required because the pi-side bootloader loads programs at 0x8000, and this is low enough address to collide with our test program, which should load at 0x0. Also note that while 0x0001'0000 is a pretty low address, we can get away with this because the test programs for today are small. If we increase the starting address the bootloading time gets longer. If you don't like this: just rewrite the pi-side bootloader to do the ELF parsing and loading (extension).
 - The test program is loaded at 0x0
 - Later in Part 2, shared libraries will be loaded at a higher, unused address (0x1000'0000) to avoid overlap.
 
-Another challenge is reading the ELF files from the FAT32 filesystem. While you can certainly use your FAT32 driver from 140E, this is certainly not the focus of this lab. So all the driver code is given in `./1-my-elf-loader/static-deps` and you only need to use one function defined in `my-fat32-driver.h`:
+Another challenge is reading the ELF files from the FAT32 filesystem. While you can use your FAT32 driver from 140E, this is not the focus of this lab. So all the driver code is given in `./1-my-elf-loader/static-deps` and you only need to use one function defined in `my-fat32-driver.h`:
 
 ```C
 // This is very unique to our Pi setup. `buffer` points to a physical address.
