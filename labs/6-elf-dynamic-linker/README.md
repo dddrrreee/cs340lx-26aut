@@ -62,7 +62,7 @@ If we were being really precise, we would use the R/pi’s virtual memory system
 
 **Sections** are the actual contents of the binary: code, data, symbols, relocation information, and much more. Common sections include `.text`, `.data`, `.bss`, `symtab`, etc.
 
-The **Section Header Table** describes each section in the ELF file: section name (e.g., `.text`), type, memory address, size, and offset in the file. This is what you use to actually locate the individual sections. It is mainly used by linkers and debuggers.
+The **Section Header Table** describes each section in the ELF file: section name (e.g., `.text`), type, memory address, size, and offset in the file. This is what you will use to actually locate the individual sections.
 
 Our workflow with ELF for today is fairly simple:
 
