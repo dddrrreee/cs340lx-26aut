@@ -11,7 +11,7 @@ void notmain() {
     // Load libpi.so into memory (use the code from part 1)
     load_elf(libpi_filename, libpi_base);
 
-    // Now libpi.so is fully loaded in memory, starting at 0x0
+    // Now libpi.so is fully loaded in memory, starting at 0x1000'0000
     // We can now start parsing it
 
     // Verify the ELF header (use the code from part 1)
