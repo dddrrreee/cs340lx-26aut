@@ -77,7 +77,7 @@ Our workflow with ELF for today is fairly simple:
 - Run `make` in the following directories: `0-my-libpi`, `0-my-static-tests`, and `0-my-dynamic-tests`
 - Copy the resulting ELF files to your SD card
 
-It is 😡😡😡 to repeatedly move files between your host machine and R/Pi. So we'll move everything we need now, and never remove the SD card again during today's lab.
+It is 😡😡😡 to repeatedly move files between your host machine and R/Pi. So we'll move everything we need now, and never remove the SD card again for the rest of today's lab.
 
 We're copying files from 3 directories, each serving a different purpose:
 
