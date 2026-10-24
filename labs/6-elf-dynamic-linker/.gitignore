@@ -4,5 +4,8 @@
 *.list
 *.readelf
 .DS_Store
+
 static-deps-src/
 0-my-libpi/objs
+0-my-static-tests/objs
+0-my-static-tests/*-static.elf
