@@ -11,3 +11,6 @@ static-deps-src/
 0-my-static-tests/*-static.elf
 0-my-dynamic-tests/objs
 0-my-dynamic-tests/*-dyn.elf
+1-my-elf-loader/objs
+1-my-elf-loader/notmain.bin
+1-my-elf-loader/notmain.elf
