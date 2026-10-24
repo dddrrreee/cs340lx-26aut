@@ -5,3 +5,4 @@
 *.readelf
 .DS_Store
 static-deps-src/
+0-my-libpi/objs
