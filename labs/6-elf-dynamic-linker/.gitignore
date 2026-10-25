@@ -17,3 +17,6 @@ static-deps-src/
 2-my-dynamic-linker/objs
 2-my-dynamic-linker/my-dynamic-linker.bin
 2-my-dynamic-linker/my-dynamic-linker.elf
+3-my-legit-dynamic-linker/objs
+3-my-legit-dynamic-linker/my-dynamic-linker.bin
+3-my-legit-dynamic-linker/my-dynamic-linker.elf
