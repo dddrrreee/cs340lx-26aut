@@ -24,7 +24,7 @@ void get_dynamic_sections(my_elf32 *e) {
     // The section addresses are stored in the `d_un.d_ptr` field.
     todo("Locate .hash, .dynsym, .dynstr, .pltgot, and .rel.dyn sections through the .dynamic section");
     // for (int i = 0; i < ???; i++) {
-    //     // Dynamic section found. Use this section to read .hash, .dynsym, .dynstr sections
+    //     // Dynamic section found. Use this section to read .hash, .dynsym, .dynstr, .pltgot, and .rel.dyn sections
     //     if (e_sheaders[i].sh_type == SHT_DYNAMIC) {
     //         ???
     //     }
