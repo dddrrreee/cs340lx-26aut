@@ -14,3 +14,6 @@ static-deps-src/
 1-my-elf-loader/objs
 1-my-elf-loader/notmain.bin
 1-my-elf-loader/notmain.elf
+2-my-dynamic-linker/objs
+2-my-dynamic-linker/my-dynamic-linker.bin
+2-my-dynamic-linker/my-dynamic-linker.elf
