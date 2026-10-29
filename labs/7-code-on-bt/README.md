@@ -25,10 +25,10 @@ figure it out but! --- you do have a sort-of oracle in that you can run
 experiments on.  If you do dispositive experiments, you can hill-climb.
 And if you hill-climb there are interesting mountains.
 
-I spent a bunch of time over Thanksgiving and Christmas reverse engineering
-the chips and my first ASI moment was when Claude finished the WiFi driver,
-sent packets to a pi running it, and used laptop webcam to check that it
-worked.
+I spent a bunch of time over Thanksgiving and Christmas reverse
+engineering the chips and my first ASI moment was when Claude finished
+the WiFi driver, sent packets to a pi running it, and used laptop webcam
+to check that it worked.  
 
 Some screenshots from that session when opus 4.5 finally succeeded:
 
@@ -55,10 +55,12 @@ that you can do violent validation has been one of the shiny objects
 I've been chasing over the past year.
 
 The result is a statement I never thought I would type: I then had
-Opus 5.5 write today's lab.  The puzzle of "what is a methodology that
-leads to clear writing" is an interesting one.  And you'll note the
-current methodology is not optimal.  But the writing is extremely clear
-and concrete.
+Opus 5.5 write today's lab.  The puzzle of "what is a methodology
+that leads to clear writing" is an interesting one.  And you'll note
+the current methodology is not optimal.  But the writing is extremely
+clear and concrete, at least for the first 4 sections.  (Apologies,
+the Sections after that were rushed because I got distracted with lab
+side-quests.)
 
 The format is an experiment:
   1. You get a complete walked through example.
@@ -70,14 +72,25 @@ code on these interesting chips.  You might never meet anyone else that
 can say the same, which is always cool.
 
 
+Credit:
+  - The initial inspiration for the work was Javier Nieto.  He built a
+    Bluetooth lab for 340lx 2025 (by hand) using the vendor firmare
+    as a follow-on to the crazy revere engineering he and Ellen Xu did
+    for their 140e 2025 final project, manually using oscilliscopes and
+    wire traces to reverse engineer the Banana Pi Bluetooth.  I helped
+    Javier out a bit with the PL011 (turns out the BCM2835 datasheet
+    has an important unknown errata!) and then got sucked into trying
+    to do a full Bluetooth and Wifi driver without firmware.  And then
+    a year burned up with tokens.
+
 For today, since everyone is busy on mid-terms and mid-term projects
 we'll just do a light quick lab:
- - Go through the Bluetooth.  Make sure it runs and you understand it.
- - Do some simple modifications to compute more stuff.
+ - Go through the Bluetooth Crash course.  Make sure it runs and you understand it.
+ - Do some simple modifications to compute more stuff and play with the
+   hello world (apologies: this section needs more editting).
  - If you feel ambitious see what kind of crazy stuff you can figure
    out.  
  - If you get very ambitious: [do Javier Nieto's Bluetooth lab from last year's 340lx](https://github.com/dddrrreee/cs340lx-25aut/tree/main/labs/10-bluetooth)!
-
 
 
 ### Timeline: Original Bluetooth and Wi-Fi investigation
