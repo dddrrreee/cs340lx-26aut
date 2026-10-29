@@ -1,19 +1,19 @@
-## Running arbitrary code on the pi's bluetooth and wifi chip
+## Running arbitrary code on the pi's Bluetooth and WiFi chip
 
-Today is a fun lab: run arbitrary-ish code on the pi's bluetooth and
-wifi chips.  These are actually two M3 ARM processors and while they
+Today is a fun lab: run arbitrary-ish code on the pi's Bluetooth and
+WiFi chips.  These are actually two M3 ARM processors and while they
 lack some things such as virtual memory, they have a full CPU, exceptions
 and a bunch of other gizmos.  
 
-Context: Bluetooth and wifi are complicated.  Rather than burn
+Context: Bluetooth and WiFi are complicated.  Rather than burn
 this complexity into hardware, which inevitably burns bugs as well,
 the common approach is to put a real CPU on the chip and have it run
 programs to implement the device.  People call this code "device firmware"
 but it's usually just regular code with a lot of arbitrary knowledge.
 
 We're going to run our own code instead of the vendors.  You can do some
-very interesting tricks by having a seperate co-processor, especially
-one that has access to the interesting wifi and bluetooth hardware.
+very interesting tricks by having a separate co-processor, especially
+one that has access to the interesting WiFi and Bluetooth hardware.
 A follow on lab with have a bunch of "choose your own adventure" cards
 to pick from to do some of these tricks.
 
@@ -22,11 +22,11 @@ of the reason that I got so AGI pilled so hard last fall.   (Ballpark:
 12-24(unfortunately) hours most days since then with 4-40 sessions going.)
 The hardware is not well documented, you have to do lots of archeology to
 figure it out but! --- you do have a sort-of oracle in that you can run
-experiments on.  If you do dispositive experiments, you can hillclimb.
-And if you hillclimb there are interesting mountains.
+experiments on.  If you do dispositive experiments, you can hill-climb.
+And if you hill-climb there are interesting mountains.
 
 I spent a bunch of time over Thanksgiving and Christmas reverse engineering
-the chips and my first ASI moment was when claude finished the wifi driver,
+the chips and my first ASI moment was when Claude finished the WiFi driver,
 sent packets to a pi running it, and used laptop webcam to check that it
 worked.
 
@@ -47,7 +47,7 @@ Wow:
 <img src="images/claude-matrix.png" width="400" />
 </div>
 
-Last week I ressurected those sessions, debriefed them, and spent
+Last week I resurrected those sessions, debriefed them, and spent
 a bunch of days redoing everything.  Much time was spent doing 
 aggressive validation on hardware with negative tests (where you
 break something and make sure you see an expected failure).  The ease
@@ -57,7 +57,7 @@ I've been chasing over the past year.
 The result is a statement I never thought I would type: I then had
 Opus 5.5 write today's lab.  The puzzle of "what is a methodology that
 leads to clear writing" is an interesting one.  And you'll note the
-current methodlogy is not optimal.  But the writing is extremely clear
+current methodology is not optimal.  But the writing is extremely clear
 and concrete.
 
 The format is an experiment:
