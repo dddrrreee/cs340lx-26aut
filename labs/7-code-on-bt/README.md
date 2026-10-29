@@ -76,4 +76,4 @@ we'll just do a light quick lab:
  - Do some simple modifications to compute more stuff.
  - If you feel ambitious see what kind of crazy stuff you can figure
    out.  
- - If you get very ambitious: [do Javier Nieto's lab from last year's 340lx](https://github.com/dddrrreee/cs340lx-25aut/tree/main/labs/10-bluetooth)!
+ - If you get very ambitious: [do Javier Nieto's Bluetooth lab from last year's 340lx](https://github.com/dddrrreee/cs340lx-25aut/tree/main/labs/10-bluetooth)!
