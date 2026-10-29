@@ -69,3 +69,11 @@ The result at the end: you'll be able to run all sorts of interesting
 code on these interesting chips.  You might never meet anyone else that
 can say the same, which is always cool.
 
+
+For today, since everyone is busy on mid-terms and mid-term projects
+we'll just do a light quick lab:
+ - Go through the Bluetooth.  Make sure it runs and you understand it.
+ - Do some simple modifications to compute more stuff.
+ - If you feel ambitious see what kind of crazy stuff you can figure
+   out.  
+ - If you get very ambitious: [do Javier Nieto's lab from last year's 340lx](https://github.com/dddrrreee/cs340lx-25aut/tree/main/labs/10-bluetooth)!
