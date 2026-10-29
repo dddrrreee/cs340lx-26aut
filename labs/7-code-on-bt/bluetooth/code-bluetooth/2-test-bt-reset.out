@@ -1,0 +1,8 @@
+TRACE:notmain:first connect 
+TRACE:notmain:hold 0 ms: kept running 
+TRACE:notmain:hold 50 ms: restarted 
+TRACE:notmain:hold 10 ms: restarted 
+TRACE:notmain:hold 1 ms: restarted 
+TRACE:notmain:hold 0 ms: kept running 
+TRACE:notmain:hold 10 ms: restarted 
+TRACE:notmain:hold 1 ms: restarted 

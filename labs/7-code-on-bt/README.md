@@ -85,9 +85,9 @@ Credit:
 
 For today, since everyone is busy on mid-terms and mid-term projects
 we'll just do a light quick lab:
- - Go through the Bluetooth Crash course.  Make sure it runs and you understand it.
+ - Go through the [Bluetooth Crash course](bluetooth/README.md).  Make sure it runs and you understand it.
  - Do some simple modifications to compute more stuff and play with the
-   hello world (apologies: this section needs more editting).
+   [bluetooth hello world](bluetooth/BLUETOOTH-HELLO-WORLD.md] (apologies: this section needs more editting).
  - If you feel ambitious see what kind of crazy stuff you can figure
    out.  
  - If you get very ambitious: [do Javier Nieto's Bluetooth lab from last year's 340lx](https://github.com/dddrrreee/cs340lx-25aut/tree/main/labs/10-bluetooth)!

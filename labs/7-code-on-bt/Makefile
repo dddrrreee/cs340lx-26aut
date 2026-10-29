@@ -1,4 +1,4 @@
-SUBDIRS=
+SUBDIRS=bluetooth
 
 .PHONY: all check clean
 all check clean: $(SUBDIRS)

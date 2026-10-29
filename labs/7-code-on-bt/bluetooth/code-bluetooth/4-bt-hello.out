@@ -1,0 +1,3 @@
+TRACE:notmain:the Bluetooth CPU says: hello from the Bluetooth CPU 
+TRACE:notmain:the ROM still answers HCI
+TRACE:notmain:the text is in RAM just below 0x21d800: the program ran on its own stack
