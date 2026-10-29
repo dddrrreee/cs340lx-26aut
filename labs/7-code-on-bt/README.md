@@ -44,7 +44,6 @@ Celebration:
 
 Wow:
 <div align="center">
-<div align="center">
 <img src="images/claude-matrix.png" width="400" />
 </div>
 
