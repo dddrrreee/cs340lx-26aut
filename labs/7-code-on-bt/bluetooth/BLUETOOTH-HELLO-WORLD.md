@@ -154,21 +154,20 @@ __stack_top = 0x21d800;
 
 <!-- source:end -->
 
-**5. A build for the M3: the Makefile.** As with `chip.S`, `make` turns the program into a C array, `hello_image.h`,
+**5. A build for the M3: the Makefile.** As with `chip.S`, `make` turns the program into a C array, `hello_image.h` (in `objs/`),
 which the Pi program, `4-bt-hello.c` (below), includes:
 
-<!-- source:start code-bluetooth/Makefile:21-29 -->
+<!-- source:start code-bluetooth/Makefile:22-29 -->
 
 ```make
 # The radio's hello world: C for the Cortex-M3, linked at LOAD (hello.ld), as bytes.
-hello_image.h: start.S hello.c hello.ld
+$(BUILD_DIR)/hello_image.h: start.S hello.c hello.ld
+	@mkdir -p $(BUILD_DIR)
 	arm-none-eabi-gcc -mcpu=cortex-m3 -mthumb -Os -ffreestanding -nostdlib -Wall -Werror \
-	    -T hello.ld start.S hello.c -o hello.elf
-	arm-none-eabi-objcopy -O binary hello.elf hello.raw
-	xxd -i < hello.raw > $@
-$(BUILD_DIR)/4-bt-hello.o: hello_image.h
-clean::
-	rm -f hello.elf hello.raw hello_image.h
+	    -T hello.ld start.S hello.c -o $(BUILD_DIR)/hello.elf
+	arm-none-eabi-objcopy -O binary $(BUILD_DIR)/hello.elf $(BUILD_DIR)/hello.raw
+	xxd -i < $(BUILD_DIR)/hello.raw > $@
+$(BUILD_DIR)/4-bt-hello.o: $(BUILD_DIR)/hello_image.h
 ```
 
 <!-- source:end -->
@@ -357,7 +356,7 @@ bytes we loaded, so our code built the event, on its own stack, and returned to 
 2. The 101 bytes: `_start` at 0x210000, with `__stack_top` as a literal at 0x210010; `radio_main` at 0x210014; a
    literal holding the text's address at 0x210044; and the 29 bytes of text at 0x210048. `ROM_SEND_EVENT`,
    0x361e | 1 = 0x361f, is built into a `movw` instruction. `radio_main` uses 40 bytes of our stack, and `_start` 8
-   bytes of the ROM's [derived: `arm-none-eabi-objdump -d hello.elf`].
+   bytes of the ROM's [derived: `arm-none-eabi-objdump -d objs/l1/l2/l3/hello.elf`].
 3. The call goes to 0x361f, not 0x361e: bit 0 selects Thumb, as for Launch_RAM at LOAD | 1 (0x210001) (ARMv7-M A2.3.1,
    p. A2-31).
 4. On the wire the event is 04 ff 1d, then the 29 bytes: 04 is an HCI event (BT Part A, Table 2.1), and 0x1d = 29 is

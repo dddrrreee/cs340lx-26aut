@@ -735,9 +735,9 @@ void bt_read_ram(unsigned addr, void *data, unsigned n) {
 <!-- source:end -->
 
 **The program, and how it gets to the radio.** `chip.S` is six Thumb instructions for the radio's Cortex-M3: read n
-from RESULT_AREA (0x21ff00), store 3n + 7 at RESULT_AREA + 4, and return. `chip.S` never runs on the Pi. `make` assembles `chip.S` for the M3, keeps the resulting 20 raw bytes, and writes them as a C array, `chip_image.h`, which `1-bt-bringup.c` and `3-test-bt-run.c` include as `chip[]`:
+from RESULT_AREA (0x21ff00), store 3n + 7 at RESULT_AREA + 4, and return. `chip.S` never runs on the Pi. `make` assembles `chip.S` for the M3, keeps the resulting 20 raw bytes, and writes them as a C array, `chip_image.h`, in `objs/` with the other build files, which `1-bt-bringup.c` and `3-test-bt-run.c` include as `chip[]`:
 
-<!-- source:start code-bluetooth/Makefile:1-19 -->
+<!-- source:start code-bluetooth/Makefile:1-20 -->
 
 ```make
 # x-stray-word.c (section 1, note 4) has no .out: make PROGS=x-stray-word.c
@@ -750,15 +750,16 @@ ifndef CS340LX_2026_PATH
 $(error set CS340LX_2026_PATH to your class checkout)
 endif
 include $(CS340LX_2026_PATH)/libpi/mk/Makefile.robust-v3
+# the radio programs' bytes, chip_image.h and hello_image.h, are built in BUILD_DIR (objs/)
+CFLAGS += -I$(BUILD_DIR)
 
 # chip.S, the Bluetooth CPU's program: assemble it for the Cortex-M3 and take its bytes.
-chip_image.h: chip.S
-	arm-none-eabi-as -mcpu=cortex-m3 -mthumb $< -o chip.o
-	arm-none-eabi-objcopy -O binary chip.o chip.bin
-	xxd -i < chip.bin > $@
-$(BUILD_DIR)/1-bt-bringup.o $(BUILD_DIR)/3-test-bt-run.o: chip_image.h
-clean::
-	rm -f chip.o chip.bin chip_image.h
+$(BUILD_DIR)/chip_image.h: chip.S
+	@mkdir -p $(BUILD_DIR)
+	arm-none-eabi-as -mcpu=cortex-m3 -mthumb $< -o $(BUILD_DIR)/chip.o
+	arm-none-eabi-objcopy -O binary $(BUILD_DIR)/chip.o $(BUILD_DIR)/chip.bin
+	xxd -i < $(BUILD_DIR)/chip.bin > $@
+$(BUILD_DIR)/1-bt-bringup.o $(BUILD_DIR)/3-test-bt-run.o: $(BUILD_DIR)/chip_image.h
 ```
 
 <!-- source:end -->
@@ -766,7 +767,7 @@ clean::
 The 20 bytes are 14 bytes of instructions, 2 bytes of padding and the 4-byte address RESULT_AREA (0x21ff00), low byte first. `chip_image.h` holds
 them:
 
-<!-- source:start code-bluetooth/chip_image.h -->
+<!-- source:start code-bluetooth/objs/l1/l2/l3/chip_image.h -->
 
 ```c
   0x03, 0x49, 0x08, 0x68, 0x00, 0xeb, 0x40, 0x00, 0x07, 0x30, 0x48, 0x60,
