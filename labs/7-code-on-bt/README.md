@@ -8,7 +8,7 @@ and a bunch of other gizmos.
 Context: Bluetooth and wifi are complicated.  Rather than burn
 this complexity into hardware, which inevitably burns bugs as well,
 the common approach is to put a real CPU on the chip and have it run
-programs to implement the device.  People call this "device firmware"
+programs to implement the device.  People call this code "device firmware"
 but it's usually just regular code with a lot of arbitrary knowledge.
 
 We're going to run our own code instead of the vendors.  You can do some
@@ -31,8 +31,11 @@ sent packets to a pi running it, and used laptop webcam to check that it
 worked.
 
 Some screenshots from that session when opus 4.5 finally succeeded:
+
 <img src="images/claude-blink0.png" width="450" />
+
 <img src="images/claude-blink.png" width="450" />
+
 <img src="images/claude-matrix.png" width="450" />
 
 Last week I ressurected those sessions, debriefed them, and spent
