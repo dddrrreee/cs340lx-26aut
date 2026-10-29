@@ -32,11 +32,11 @@ worked.
 
 Some screenshots from that session when opus 4.5 finally succeeded:
 
-<img src="images/claude-blink0.png" width="450" />
+<img src="images/claude-blink0.png" width="450" align="center" />
 
-<img src="images/claude-blink.png" width="450" />
+<img src="images/claude-blink.png" width="450" align="center" />
 
-<img src="images/claude-matrix.png" width="450" />
+<img src="images/claude-matrix.png" width="450" align="center"/>
 
 Last week I ressurected those sessions, debriefed them, and spent
 a bunch of days redoing everything.  Much time was spent doing 
