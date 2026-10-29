@@ -32,14 +32,18 @@ worked.
 
 Some screenshots from that session when opus 4.5 finally succeeded:
 
+Success:
 <div align="center">
 <img src="images/claude-blink0.png" width="400" />
 </div>
 
+Celebration:
 <div align="center">
 <img src="images/claude-blink.png" width="400" />
 </div>
 
+Wow:
+<div align="center">
 <div align="center">
 <img src="images/claude-matrix.png" width="400" />
 </div>
