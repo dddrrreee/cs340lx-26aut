@@ -85,7 +85,7 @@ Credit:
 
 For today, since everyone is busy on mid-terms and mid-term projects
 we'll just do a light quick lab:
- - Go through the [Bluetooth Crash course](bluetooth/README.md).  Make sure it runs and you understand it.
+ - Go through the [README](bluetooth/README.md) and the [Bluetooth Crash course](bluetooth/BLUETOOTH-CRASH-COURSE.md).  Make sure it runs and you understand it.
  - Do some simple modifications to compute more stuff and play with the
    [bluetooth hello world](bluetooth/BLUETOOTH-HELLO-WORLD.md] (apologies: this section needs more editting).
  - If you feel ambitious see what kind of crazy stuff you can figure
