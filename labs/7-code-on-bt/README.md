@@ -82,6 +82,10 @@ Credit:
     has an important unknown errata!) and then got sucked into trying
     to do a full Bluetooth and Wifi driver without firmware.  And then
     a year burned up with tokens.
+  - And a huge thank you to the great Martin Casado (Stanford, now
+    az16) for access to an API key so I could resurrect my old 5.2
+    sessions that this is based on.
+
 
 For today, since everyone is busy on mid-terms and mid-term projects
 we'll just do a light quick lab:
