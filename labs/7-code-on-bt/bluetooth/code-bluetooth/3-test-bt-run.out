@@ -1,0 +1,2 @@
+TRACE:notmain:without Launch_RAM the answer stays ~(3n+7) 
+TRACE:notmain:after Launch_RAM it is 3n+7 

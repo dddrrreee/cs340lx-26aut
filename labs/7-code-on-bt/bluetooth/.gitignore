@@ -1,0 +1,10 @@
+# build outputs (make regenerates them)
+code-bluetooth/objs/
+code-bluetooth/*.bin
+code-bluetooth/*.list
+code-bluetooth/*.elf
+code-bluetooth/*.o
+code-bluetooth/*.test*
+code-bluetooth/chip_image.h
+code-bluetooth/hello.raw
+code-bluetooth/hello_image.h

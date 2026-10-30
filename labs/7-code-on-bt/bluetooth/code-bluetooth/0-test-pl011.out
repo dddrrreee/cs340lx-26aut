@@ -1,0 +1,6 @@
+TRACE:notmain:at entry: CR=0x301 IBRD=26 FBRD=3 LCRH=0x70
+TRACE:notmain:115200 baud (IBRD 26, FBRD 3): 64 bytes back, 63 frames in 5470 us 
+TRACE:notmain:115385 baud (IBRD 26, FBRD 0): 64 bytes back, 63 frames in 5460 us 
+TRACE:notmain:57600 baud (IBRD 52, FBRD 5): 64 bytes back, 63 frames in 10936 us 
+TRACE:notmain:230400 baud (IBRD 13, FBRD 1): 64 bytes back, 63 frames in 2733 us 
+TRACE:notmain:921600 baud (IBRD 3, FBRD 16): 64 bytes back, 63 frames in 683 us 
