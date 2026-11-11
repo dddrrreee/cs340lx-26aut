@@ -54,7 +54,8 @@ Calibration:
   1. My max reading using pin 20 was around 1091 cycles.
   2. My min was 0.
   3. If you plug more floating pins in with jumpers the maximum
-     should jump.  Same for longer jumpers.
+     should jump (for me: about 2x).  Same for longer jumpers 
+     (a little).
 
 Two games:
   1. Be as precise as possible in your reads.   A raw inlined read
