@@ -77,6 +77,11 @@ Two games:
      You can probably try different pins --- measure their floating
      discharge and use the ones that take the longest.
 
+You can also mess with the GPIO "pad" hysterisis, skew and pad
+strength settings --- these can make interesting differences.
+See: 
+  - [GPIO Pads Control](./docs/GPIO-PADS-control2.pdf).
+
 Many many tricks for these.   Dithering (from EE) where you average
 samples and, ideally, add some some random jitter is a good algorithmic
 way.
