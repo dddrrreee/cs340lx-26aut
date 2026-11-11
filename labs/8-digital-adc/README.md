@@ -40,8 +40,8 @@ the pi and read it directly you will (at best) get 0 or 1 depending on
 the position.  (In a typical case: You may well get only 0 or only 1
 or smoke.)
 
-I think there are several ways to do it.  One simple recipe:
-  1. 3v on the vcc pin.
+There are several ways to do it.  One simple recipe:
+  1. 3v on the vcc pin. Ground pin floating.
   2. GPIO on the middle (SENSE) pin.
   3. Rising algorithm:
      1. Set GPIO to floating at the start.
@@ -56,6 +56,12 @@ Calibration:
   3. If you plug more floating pins in with jumpers the maximum
      should jump (for me: about 2x).  Same for longer jumpers 
      (a little).
+
+Note: We can also do the reverse:
+  1. Ground pin on ground terminal, vcc floating.
+  2. Sense pin still on middle, still floating.
+  3. Instead of measuring rising, measure falling: set SENSE to
+     1, flip to input, see how many cycles to get to 0.
 
 Two games:
   1. Be as precise as possible in your reads.   A raw inlined read
