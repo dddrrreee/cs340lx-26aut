@@ -40,7 +40,34 @@ the pi and read it directly you will (at best) get 0 or 1 depending on
 the position.  (In a typical case: You may well get only 0 or only 1
 or smoke.)
 
-Check back on the wiring for this.
+I think there are several ways to do it.  One simple recipe:
+  1. 3v on the vcc pin.
+  2. GPIO on the middle (SENSE) pin.
+  3. Rising algorithm:
+     1. Set GPIO to floating at the start.
+     2. Drive low: Set GPIO to output, Write 0.
+     3. Measure how long it takes to go from 0 to 1: flip to input,
+        count cycles until 1 (maybe have a timeout).
+
+
+Calibration:
+  1. My max reading using pin 20 was around 1091 cycles.
+  2. My min was 0.
+  3. If you plug more floating pins in with jumpers the maximum
+     should jump.  Same for longer jumpers.
+
+Two games:
+  1. Be as precise as possible in your reads.  A raw inlined read
+     from the GPIO level register is about 50 cycles.  If you can
+     get more accurate (overclock, interrupts) you can get more
+     readings during the decay = more bits of precision.
+  2. Stretch out how long discharge takes.  The easiest (as above):
+     add more floating pins (the capacitance is additive).   You can
+     also change the shape of the wire.  You can also use longer wires.
+     You can probably try different pins --- measure their floating
+     discharge and use the ones that take the longest.
+
+Many many tricks for these.   
 
 -------------------------------------------------------------------
 ## Discussion: memory barriers on bcm2835 are a lie.
