@@ -57,17 +57,22 @@ Calibration:
      should jump.  Same for longer jumpers.
 
 Two games:
-  1. Be as precise as possible in your reads.  A raw inlined read
+  1. Be as precise as possible in your reads.   A raw inlined read
      from the GPIO level register is about 50 cycles.  If you can
-     get more accurate (overclock, interrupts) you can get more
-     readings during the decay = more bits of precision.
-  2. Stretch out how long discharge takes.  The easiest (as above):
+     read LEVEL faster (e.g., overclock) you get more accurate.
+     If you detect the transition more accurately (e.g.,
+     interrupts or dithering) you get a finer resolution.
+     More readings, more accurate readings = more bits of precision.
+  2. Stretch out how long discharge takes: the longer this is, the
+     more readings you get (and more bits).  The easiest (as above):
      add more floating pins (the capacitance is additive).   You can
      also change the shape of the wire.  You can also use longer wires.
      You can probably try different pins --- measure their floating
      discharge and use the ones that take the longest.
 
-Many many tricks for these.   
+Many many tricks for these.   Dithering (from EE) where you average
+samples and, ideally, add some some random jitter is a good algorithmic
+way.
 
 -------------------------------------------------------------------
 ## Discussion: memory barriers on bcm2835 are a lie.
