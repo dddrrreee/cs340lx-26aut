@@ -40,7 +40,46 @@ the pi and read it directly you will (at best) get 0 or 1 depending on
 the position.  (In a typical case: You may well get only 0 or only 1
 or smoke.)
 
-Check back on the wiring for this.
+There are several ways to do it.  One simple recipe:
+  1. 3v on the vcc pin. Ground pin floating.
+  2. GPIO on the middle (SENSE) pin.
+  3. Rising algorithm:
+     1. Set GPIO to floating at the start.
+     2. Drive low: Set GPIO to output, Write 0.
+     3. Measure how long it takes to go from 0 to 1: flip to input,
+        count cycles until 1 (maybe have a timeout).
+
+
+Calibration:
+  1. My max reading using pin 20 was around 1091 cycles.
+  2. My min was 0.
+  3. If you plug more floating pins in with jumpers the maximum
+     should jump (for me: about 2x).  Same for longer jumpers 
+     (a little).
+
+Note: We can also do the reverse:
+  1. Ground pin on ground terminal, vcc floating.
+  2. Sense pin still on middle, still floating.
+  3. Instead of measuring rising, measure falling: set SENSE to
+     1, flip to input, see how many cycles to get to 0.
+
+Two games:
+  1. Be as precise as possible in your reads.   A raw inlined read
+     from the GPIO level register is about 50 cycles.  If you can
+     read LEVEL faster (e.g., overclock) you get more accurate.
+     If you detect the transition more accurately (e.g.,
+     interrupts or dithering) you get a finer resolution.
+     More readings, more accurate readings = more bits of precision.
+  2. Stretch out how long discharge takes: the longer this is, the
+     more readings you get (and more bits).  The easiest (as above):
+     add more floating pins (the capacitance is additive).   You can
+     also change the shape of the wire.  You can also use longer wires.
+     You can probably try different pins --- measure their floating
+     discharge and use the ones that take the longest.
+
+Many many tricks for these.   Dithering (from EE) where you average
+samples and, ideally, add some some random jitter is a good algorithmic
+way.
 
 -------------------------------------------------------------------
 ## Discussion: memory barriers on bcm2835 are a lie.
