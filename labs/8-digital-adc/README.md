@@ -18,7 +18,7 @@ Use the tricks discussd to:
      cycles to go from 1 to 0: that is the resistance.  Will vary
      in units of 50 cycles or so.)
 
-Possible:
+Optional:
   - Light sensor using LED.
   - Build virtual jumpers with DMA.
   - Make a virtual device that drives hardware devices.
@@ -85,6 +85,77 @@ See:
 Many many tricks for these.   Dithering (from EE) where you average
 samples and, ideally, add some some random jitter is a good algorithmic
 way.
+
+-------------------------------------------------------------------
+### LED light sensor
+
+NOTE:
+  - I had to use my camera's LED light to trigger this --- ambient
+    light seems too little.
+  - I used a large blue.  Presumably small is better, and different
+    colors have different results.
+
+
+For this we will use a single LED and an old cute trick: when you connect
+an LED to power in the "regular" way (long leg to power, short to ground)
+it emits light.  When you reverse it, it senses light:
+  1. The higher the light intensity, the more resistance, so the
+     longer it will take to drain.
+  2. The lower the intensity, the less resistence so the shorter it
+     takes to drain.
+
+The circuit is as follows:
+
+```
+Circuit: LED Photoresistor with GPIO Power Control
+
+     GPIO_POWER (output)
+       |
+       |  (cathode - short side)
+      ---
+     / | \  LED (reversed!)
+     \ | /
+      ---
+       |  (anode - long side)
+       |
+       +------- GPIO_SENSE (input, no pull)
+       |
+      [R]  (1-10MΩ optional discharge resistor)
+       |
+      GND
+```
+
+Wiring:
+  - one GPIO pin to cathode (short side): POWER.
+  - one GPIO pin to anode (long side): SENSE.
+  - I didn't connect GND or Vcc.
+
+Measurement procedure:
+ 0. Set the GPIO_SENSE pin to input and no-pull.
+ 1. Charge Phase (LED powered)
+   - Set LED_POWER as OUTPUT, drive HIGH
+   - LED cathode at 3.3V, anode connected to SENSE pin
+   - Wait 100ms for capacitor to charge through LED
+   - Ambient light hitting LED generates photocurrent during this phase
+ 2. Power Off
+   - Set LED_POWER LOW
+   - This instantly kills the LED's photocurrent generation
+ 3. Measure Discharge
+   - Set GPIO_SENSE as INPUT with no pull resistors
+   - Start timer
+   - Poll GPIO_SENSE until it reads LOW (crosses threshold ~1.8V)
+   - Stop timer - discharge time is your measurement
+ 4. Result
+   - Longer discharge time = brighter light was present during charge phase
+   - Shorter discharge time = darker conditions
+
+Key Points:
+   - LED is "backwards" - cathode to power, anode to sense pin
+   - No delay needed between power-off and measurement
+   - Optional external resistor (1-10MΩ) speeds up discharge if needed
+   - Can add capacitor bank (multiple GPIO pins in parallel) to 
+     slow it down
+
 
 -------------------------------------------------------------------
 ## Discussion: memory barriers on bcm2835 are a lie.
