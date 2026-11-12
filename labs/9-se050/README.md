@@ -185,7 +185,7 @@ but a production driver should implement them (and R-blocks). Feel free to do it
 
 Tip: since we skip the soft reset, the chip keeps its T=1 state (e.g., its N(S)) across Pi reboots, because rebooting the Pi does not
 power-cycle the SE050. If things work on the first run but act weird on the next one, **power-cycle the chip between runs** (unplug and
-replug the Pi, or the SE050 board's power).
+replug the Pi, or use either the software power control if you have the HUGE board, or the push button on the Parthiv one).
 
 ### Command basics
 
