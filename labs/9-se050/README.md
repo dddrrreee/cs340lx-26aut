@@ -65,6 +65,12 @@ abstractions above I2C. Roughly, the layers are as follows:
 Following is a ground-up guide on how to implement each of these layers. Primary references
 are the SE050 APDU Specification (AN12413) and the NXP SE05x T=1 Over I2C Specification (UM11225).
 
+Side note: this lab was *too much* reading when I first did it, so I distilled the essential parts of the
+reading and included them as a part of this write up. With the starter code, the only thing you'll have
+to read is the frame format of each individual commands, which is available in **AN12413**. If there's anything
+unclear, feel free to look through the sections referenced, since the two docs are the ground truth of
+the protocol implementation.
+
 ### I2C
 
 We can reuse the I2C code from previous labs, but with one important bit to handle:
