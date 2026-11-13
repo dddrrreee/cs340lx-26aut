@@ -1,3 +1,5 @@
+## Threat model
+
 If the attacker can: control the machine enough to invoke enclave then:
   1. They can generate a valid 6-digit code by invoking the enclave for
      current time t.
@@ -18,3 +20,8 @@ Assume login requires both valid code and password.  Then:
  2. If they have the correct password but submit an invalid code, the
     authenticator check blocks the login.  Note: space of guesses bounded
     by 10^6 so without attempt limits, this is likely more feasible.
+
+## Then what does this protect against??
+<https://cs255.stanford.edu/lectures/key-exch.pdf>
+
+## Can we do even better??
