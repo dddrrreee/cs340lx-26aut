@@ -77,7 +77,17 @@ We can reuse the I2C code from previous labs, but with one important bit to hand
 **the SE050 NAKs** when it's busy. The staff libpi driver `panic`s when it sees a NAK, but that
 is normal for the SE050, which just to indicate that it's busy and cannot handle the request.
 Implement the I2C code to report NAKs instead of panicking, and use the `i2c_xfer_poll` function
-as a retry wrapper.
+as a retry wrapper, so that it retries the underlying transfer a certain number of times before
+returning an error.
+
+Reading the frame diagram: since there was complains that the frame diagrams do not make sense,
+here's some quick tips reading it:
+- B means bytes, so `xB` in the size field means the field is `x` bytes.
+- Read them from left to right, that indicates the order these fields should fly on the wire.
+- If something is unclear, check if the description below it answers.
+- Order of bits in a single byte is the standard I2C MSB order. This should not matter since
+  hardware I2C will handle it for us.
+
 
 ### T=1
 
@@ -103,7 +113,8 @@ NAD | PCB | LEN | INF   | CRC  <- fields
     acknowledge a chained block, and sending one does not advance either side's N(S).
 
   For the main lab you only need to track (and toggle) the Pi's N(S); R-blocks and S-blocks are left for the
-  extensions since they are a bit more complicated.
+  extensions since they are a bit more complicated. **In a nutshell, the only two PCBs we are going to use are
+  `0x00` and `0x40` (for the main lab).**
 - LEN is the length of the INF field, which can be 0-254 bytes (note `0xff` is an indicator of extended length,
   which we will not use in this lab).
 - INF is the information field, which contains the data of `LEN` bytes.
@@ -157,7 +168,7 @@ table of the command.
 
 ### TLV
 
-Before we can dive into the actual commands, TLV is yet another encoding to come into our way. TLV stands for Tag-Length-Value,
+Before we can dive into the actual commands, TLV is yet another encoding we have to handle. TLV stands for Tag-Length-Value,
 and the version we are using roughly follows [ISO7816-4 Annex D](https://cardwerk.com/iso7816-4-annex-d-use-of-basic-encoding-rules-asn-1/).
 
 The rough shape of a TLV this chip wants is as follows:
