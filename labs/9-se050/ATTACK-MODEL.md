@@ -1,4 +1,4 @@
-## Threat model (shot out to dre)
+## Threat model (shout out to dre)
 
 If the attacker can: control the machine enough to invoke enclave then:
   1. They can generate a valid 6-digit code by invoking the enclave for
