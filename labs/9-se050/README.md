@@ -80,6 +80,8 @@ Implement the I2C code to report NAKs instead of panicking, and use the `i2c_xfe
 as a retry wrapper, so that it retries the underlying transfer a certain number of times before
 returning an error.
 
+btw: **slave addr of the chip on I2C is `0x48`**
+
 Reading the frame diagram: since there was complains that the frame diagrams do not make sense,
 here's some quick tips reading it:
 - B means bytes, so `xB` in the size field means the field is `x` bytes.
