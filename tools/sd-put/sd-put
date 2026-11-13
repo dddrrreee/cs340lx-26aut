@@ -1,0 +1,179 @@
+#!/usr/bin/env python3
+"""sd-put: put files on the pi's SD card over the UART. No card reader.
+
+  sd-put ls                  what's on the card
+  sd-put cp FILE...          copy files onto the card
+  sd-put cp FILE:NAME.EXT    ...under a different name
+  sd-put rm NAME...          remove files
+  sd-put get NAME...         copy files from the card to here
+
+  -y  don't ask first     -n  dry run: check everything, write nothing
+  --boot  let cp replace a boot file (kernel.img, config.txt, ...)
+"""
+import argparse, glob, os, re, struct, subprocess, sys, termios, time, zlib
+
+PI_DIR = os.path.join(os.path.dirname(os.path.realpath(__file__)), "pi")
+
+# the normal bootloader's protocol (same as pi-install)
+GET_PROG_INFO, PUT_PROG_INFO = 0x11112222, 0x33334444
+GET_CODE, PUT_CODE, BOOT_SUCCESS = 0x55556666, 0x77778888, 0x9999AAAA
+PRINT_STRING = 0xDDDDEEEE
+
+
+def die(msg):
+    sys.exit("sd-put: " + msg)
+
+
+class Pi:
+    """The serial connection to the pi."""
+
+    def __init__(self, dev=None):
+        dev = dev or next((d for pat in ("/dev/ttyUSB*", "/dev/ttyACM*", "/dev/cu.usbserial*",
+                                         "/dev/cu.SLAB_USBtoUART*")
+                           for d in sorted(glob.glob(pat), reverse=True)), None)
+        if not dev:
+            die("no USB serial device. Is the pi plugged in?")
+        self.fd = os.open(dev, os.O_RDWR | os.O_NOCTTY)
+        t = termios.tcgetattr(self.fd)   # raw 8N1, 115200 baud
+        t[0] = t[1] = t[3] = 0
+        t[2] = termios.CS8 | termios.CREAD | termios.CLOCAL
+        t[4] = t[5] = termios.B115200
+        t[6][termios.VMIN], t[6][termios.VTIME] = 0, 1
+        termios.tcsetattr(self.fd, termios.TCSANOW, t)
+        termios.tcflush(self.fd, termios.TCIOFLUSH)
+
+    def read(self, n, timeout=120):
+        out, give_up = b"", time.time() + timeout
+        while len(out) < n:
+            got = os.read(self.fd, n - len(out))
+            out += got
+            if got:
+                give_up = time.time() + timeout
+            elif time.time() > give_up:
+                die("the pi stopped talking")
+        return out
+
+    def u32(self):
+        return struct.unpack("<I", self.read(4))[0]
+
+    def send(self, *parts):
+        b = b"".join(struct.pack("<I", x) if isinstance(x, int) else x for x in parts)
+        while b:
+            b = b[os.write(self.fd, b):]
+
+    def boot(self, code):
+        """Hand <code> to the bootloader, exactly like pi-install."""
+        print("sd-put: waiting for the pi (press reset if this hangs)")
+        last4 = b""
+        while last4 != struct.pack("<I", GET_PROG_INFO):
+            last4 = (last4 + self.read(1, timeout=15))[-4:]
+        self.send(PUT_PROG_INFO, 0x8000, len(code), zlib.crc32(code))
+        while (op := self.u32()) in (GET_PROG_INFO, PRINT_STRING):
+            if op == PRINT_STRING:
+                self.read(self.u32())
+        if op != GET_CODE or self.u32() != zlib.crc32(code):
+            die("the bootloader didn't like that")
+        self.send(PUT_CODE, code)
+        while (op := self.u32()) == PRINT_STRING:
+            self.read(self.u32())
+        if op != BOOT_SUCCESS:
+            die("the bootloader didn't like that")
+
+    def serve(self, files, got=None):
+        """Print what the pi says; when it asks for a file, send it; when it
+        sends one (0x02), append it to <got>. Returns everything it printed."""
+        said = b""
+        while not said.endswith(b"DONE!!!"):
+            c = self.read(1)
+            if c == b"\x02":
+                n, crc = self.u32(), self.u32()
+                data = self.read(n)
+                if zlib.crc32(data) != crc:
+                    die("a file from the pi got garbled (bad crc)")
+                got.append(data)
+                continue
+            if c != b"\x01":
+                said += c
+                sys.stdout.write(c.decode(errors="replace"))
+                sys.stdout.flush()
+                continue
+            req = b""
+            while not req.endswith(b"\n"):
+                req += self.read(1)
+            data = files.get(req[4:-1].decode())    # strip "GET " and "\n"
+            if data is None:
+                self.send(b"FILE", 0xFFFFFFFF, 0)
+            else:
+                self.send(b"FILE", len(data), zlib.crc32(data), data)
+        print()
+        return said.decode(errors="replace")
+
+
+def card_name(path, name=""):
+    name = (name or os.path.basename(path)).upper()
+    if not re.fullmatch(r"[A-Z0-9_~!#$%&'(){}^@`-]{1,8}(\.[A-Z0-9_~!#$%&'(){}^@`-]{1,3})?", name):
+        die("<%s> won't fit FAT's 8.3 names (8 chars, dot, 3 chars). "
+            "Name it yourself: sd-put cp %s:NAME.EXT" % (name, path))
+    return name
+
+
+def main():
+    ap = argparse.ArgumentParser(prog="sd-put", description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("cmd", choices=["ls", "cp", "rm", "get"])
+    ap.add_argument("files", nargs="*")
+    ap.add_argument("-y", action="store_true", help="don't ask first")
+    ap.add_argument("-n", action="store_true", help="dry run")
+    ap.add_argument("--boot", action="store_true", help="allow replacing boot files")
+    ap.add_argument("--dev", help="serial device (default: the last USB one)")
+    a = ap.parse_intermixed_args()
+    if (a.cmd == "ls") != (not a.files):
+        die("ls takes no files; cp and rm need some")
+
+    # the job file the pi asks for first (see pi/main.c)
+    t = time.localtime()
+    fat_date = (t.tm_year - 1980) << 9 | t.tm_mon << 5 | t.tm_mday
+    fat_time = t.tm_hour << 11 | t.tm_min << 5 | t.tm_sec // 2
+    if a.boot and a.cmd != "cp":
+        die("--boot only goes with cp")
+    mode = ("dry" if a.n else "go") + ("+boot" if a.boot else "")
+    job = ["%s %s %d %d" % (a.cmd, mode, fat_date, fat_time)]
+    files = {}
+    for i, f in enumerate(a.files):
+        if a.cmd in ("rm", "get"):
+            job.append("- " + card_name(f))
+            continue
+        path, _, name = f.partition(":")
+        if not os.path.isfile(path):
+            die("no such file: " + path)
+        files["f%d" % i] = open(path, "rb").read()
+        job.append("f%d %s" % (i, card_name(path, name)))
+    files["@job"] = "\n".join(job).encode() + b"\n"
+
+    if a.cmd in ("cp", "rm") and not a.n and not a.y:
+        for line in job[1:]:
+            print("  %s %s" % (a.cmd, line.split()[1]))
+        if a.boot:
+            print("  careful: this replaces a BOOT file. If the new one doesn't boot, you'll need a card reader.")
+        if input("write this to the SD card? [y/N] ").strip().lower() not in ("y", "yes"):
+            die("ok, nothing done")
+
+    r = subprocess.run(["make", "-s", "-C", PI_DIR], capture_output=True, text=True)
+    if r.returncode:
+        die("couldn't build the pi side:\n" + r.stdout + r.stderr)
+
+    pi = Pi(a.dev)
+    pi.boot(open(os.path.join(PI_DIR, "sd-put.bin"), "rb").read())
+    got = []
+    ok = "SD-PUT: OK" in pi.serve(files, got)
+    for line, data in zip(job[1:], got):
+        name = line.split()[1]
+        if os.path.exists(name):
+            die("not overwriting ./%s (move it first)" % name)
+        open(name, "wb").write(data)
+        print("sd-put: saved ./%s (%d bytes)" % (name, len(data)))
+    sys.exit(0 if ok else 1)
+
+
+if __name__ == "__main__":
+    main()
