@@ -1,4 +1,4 @@
-## Threat model
+## Threat model (shot out to dre)
 
 If the attacker can: control the machine enough to invoke enclave then:
   1. They can generate a valid 6-digit code by invoking the enclave for
@@ -21,7 +21,10 @@ Assume login requires both valid code and password.  Then:
     authenticator check blocks the login.  Note: space of guesses bounded
     by 10^6 so without attempt limits, this is likely more feasible.
 
-## Then what does this protect against??
-<https://cs255.stanford.edu/lectures/key-exch.pdf>
+## Then what does this protect against?
+- Limit of explosion radius ([pp. 7, dabo](https://cs255.stanford.edu/lectures/key-exch.pdf))
+- Forward secrecy
+
+
 
 ## Can we do even better??
