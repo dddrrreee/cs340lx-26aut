@@ -1,5 +1,6 @@
 # DAC fun
-So you have a DAC and want to make it go bleep bloop. Great, me too! bleep bloop indeed. I love when that happens. To do this you'd need to do a few things. Specifically, we aim to:
+
+So you have a DAC and want to make it go bleep bloop. Great, me too (jack!)! bleep bloop indeed. I love when that happens. To do this you'd need to do a few things. Specifically, we aim to:
 
 1. learn about the PCM5102 DAC
 2. learn about the I2S protocol

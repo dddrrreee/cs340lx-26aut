@@ -1,5 +1,7 @@
 ## Rowhammer!
 
+I was taking cs350s and it had some cool hardware hacks so I thought I would mention one! - agniv
+
 DRAM stores each bit as a charge in a capacitor, in a grid of rows. Reading a row (called an ACTIVATE) can electrically disturb the rows next to it, and so the operating system will correct for this every 32-64ms, dependng on the operating system. If you are able to "hammer" one row enough times inside of one of these refresh windows, a bit in a neighboring row can flip! 
 
 Note that these attacks require the capacitors to be sufficiently small enough for these disturbances to reach each other, and as a result most of these attacks were developed from 2014-2016.
