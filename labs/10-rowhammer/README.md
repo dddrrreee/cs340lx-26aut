@@ -213,6 +213,7 @@ your 0-hammer attack + DMA refresh  ->   0 flips
 Once the three parts work, here's some things that might be cool:
 
 - **If you can describe the full address map that would be sick!** This was reversed with claude by varying the stride until there were flips at all, which feels kind of bullshit.
+  - I think https://www.usenix.org/conference/usenixsecurity16/technical-sessions/presentation/pessl would tell you how to do this, I just haven't
 - **Do a 1 -> 0 flip!**
   - No clue if this is possible.
 - **I'll buy a boba if you have a real explanation for why load doesn't work on this board,** I really have no clue man.
@@ -220,5 +221,8 @@ Once the three parts work, here's some things that might be cool:
 - Do a **flip on a live page table** (i.e. the page table the MMU would be walking right now). 
   - A live page table is the one the MMU is walking right now to translate your accesses (the `live_pt` in `pte-vm.h` is exactly that). In Spraying you flipped an inert *copy* and then installed it, but here you're flipping a descriptor that's already in the table the hardware is actively using, so the redirect takes effect on the very next load/store, avoiding no install step at all.
   - Rough setup: map a big window of VAs (a few hundred MB) through descriptors that live in the hammerable arena, point them all at your own benign frame, hammer, then just dereference the window. Whichever descriptor flipped now silently reads a frame you were never granted, mid-stride, while the MMU walks it. (You need an in-DRAM table for this, which `pte-vm.h` already builds.)
+- Implement Feng Shui
+  - https://www.usenix.org/conference/usenixsecurity16/technical-sessions/presentation/razavi
+  - TLDR this is a probabilistic attack and this is a method to make it more deterministic. 
 
 happy hacking!
