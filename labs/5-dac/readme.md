@@ -1,5 +1,7 @@
 # DAC fun
 
+Alt title: DJ([ack](https://www.jemoka.com/)) lab
+
 So you have a DAC and want to make it go bleep bloop. Great, me too (jack!)! bleep bloop indeed. I love when that happens. To do this you'd need to do a few things. Specifically, we aim to:
 
 1. learn about the PCM5102 DAC
