@@ -1,5 +1,7 @@
 ## Rowhammer!
 
+**UPDATE: THE SECOND PART WITH SPRAYING PAGE TABLE ENTRIES IS NOW A MINOR EXTENSION**
+
 I was taking cs350s and it had some cool hardware hacks so I thought I would mention one! - agniv
 
 DRAM stores each bit as a charge in a capacitor, in a grid of rows. Reading a row (called an ACTIVATE) can electrically disturb the rows next to it, and so the memory controller will correct for this every 32-64ms, dependng on the operating system. If you are able to "hammer" one row enough times inside of one of these refresh windows, a bit in a neighboring row can flip! 
