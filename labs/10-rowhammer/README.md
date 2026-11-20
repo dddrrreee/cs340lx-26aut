@@ -2,7 +2,7 @@
 
 I was taking cs350s and it had some cool hardware hacks so I thought I would mention one! - agniv
 
-DRAM stores each bit as a charge in a capacitor, in a grid of rows. Reading a row (called an ACTIVATE) can electrically disturb the rows next to it, and so the operating system will correct for this every 32-64ms, dependng on the operating system. If you are able to "hammer" one row enough times inside of one of these refresh windows, a bit in a neighboring row can flip! 
+DRAM stores each bit as a charge in a capacitor, in a grid of rows. Reading a row (called an ACTIVATE) can electrically disturb the rows next to it, and so the memory controller will correct for this every 32-64ms, dependng on the operating system. If you are able to "hammer" one row enough times inside of one of these refresh windows, a bit in a neighboring row can flip! 
 
 Note that these attacks require the capacitors to be sufficiently small enough for these disturbances to reach each other, and as a result most of these attacks were developed from 2014-2016.
 
@@ -14,7 +14,7 @@ Most of my understanding of this was pulled from Kim et al. "Flipping Bits in Me
 
 A DRAM cell is a capacitor and one access transistor (a MOSFET). It represents a bit by being fully charged or fully discharded. Cells are in a grid where "a horizontal wordline connects all cells in the [row]" and a vertical bitline for the column (check [the wikipedia article](https://en.wikipedia.org/wiki/Dynamic_random-access_memory#Array_structures)). To read a row you "activate" it, i.e. "the row's wordline must be enabled by raising its voltage." 
 
-Capacitors can leak on their own through what Kim says is "subthreshold leakage and gate-induced drain leakage," which are just fancy ways of saying that current doesn't really play nicely. That's why your operating system refreshes DRAM, and DDR3 specifically refreshes every 64ms, specifically by issuing "8192 REF commands during 64ms, once every 7.7us," meaning every row gets corrected once per window. 
+Capacitors can leak on their own through what Kim says is "subthreshold leakage and gate-induced drain leakage," which are just fancy ways of saying that current doesn't really play nicely. That's why the memory controller refreshes DRAM, and DDR3 specifically refreshes every 64ms, specifically by issuing "8192 REF commands during 64ms, once every 7.7us," meaning every row gets corrected once per window. 
 
 Our pi zero isn't DDR3, though, it's LPDDR2, and the LPDDR2 refresh window is ~32ms while the chip is <=85 C (it gets smaller as it heats up). The firmware fires a refresh every 7.78us ([`rpi-open-firmware/firmware/sdram.c` L170](https://github.com/librerpi/rpi-open-firmware/blob/032ffa1b10675b8a47d16b57847a799dfe94fe8e/firmware/sdram.c#L170), defines `tREFI = 3113` cycles at 400 MHz). So on this board you get a ~32ms window, which is less slack for us!
 
@@ -31,6 +31,8 @@ First, we need to establish what a "row" is. DRAM is organized as a 2D sheet of 
 ```
 
 We need to be in the same bank but attack different rows, meaning that for two addresses that are 32 KB apart, the bank and col bits are identical but the rows have changed. Now we can attack!
+
+(One bookkeeping note: everything above is in **byte** addresses, but the code indexes `uint32_t` **words** (`arena[i]`). So a byte offset is `i * 4`, and the 32 KB row stride is `ROW_STRIDE / 4 = 8192` words. Whenever the README says "32 KB," the code steps 8192 array slots.)
 
 ### random reverse engineer shit, feel free to skip
 
@@ -215,7 +217,6 @@ your 0-hammer attack + DMA refresh  ->   0 flips
 Once the three parts work, here's some things that might be cool:
 
 - **If you can describe the full address map that would be sick!** This was reversed with claude by varying the stride until there were flips at all, which feels kind of bullshit.
-  - I think https://www.usenix.org/conference/usenixsecurity16/technical-sessions/presentation/pessl would tell you how to do this, I just haven't
 - **Do a 1 -> 0 flip!**
   - No clue if this is possible.
 - **I'll buy a boba if you have a real explanation for why load doesn't work on this board,** I really have no clue man.
@@ -223,8 +224,7 @@ Once the three parts work, here's some things that might be cool:
 - Do a **flip on a live page table** (i.e. the page table the MMU would be walking right now). 
   - A live page table is the one the MMU is walking right now to translate your accesses (the `live_pt` in `pte-vm.h` is exactly that). In Spraying you flipped an inert *copy* and then installed it, but here you're flipping a descriptor that's already in the table the hardware is actively using, so the redirect takes effect on the very next load/store, avoiding no install step at all.
   - Rough setup: map a big window of VAs (a few hundred MB) through descriptors that live in the hammerable arena, point them all at your own benign frame, hammer, then just dereference the window. Whichever descriptor flipped now silently reads a frame you were never granted, mid-stride, while the MMU walks it. (You need an in-DRAM table for this, which `pte-vm.h` already builds.)
-- Implement Feng Shui
-  - https://www.usenix.org/conference/usenixsecurity16/technical-sessions/presentation/razavi
-  - TLDR this is a probabilistic attack and this is a method to make it more deterministic. 
 
 happy hacking!
+
+-agniv
